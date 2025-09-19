@@ -1,0 +1,34 @@
+#initiation docker avec chat GPT
+name: le_21
+
+services:
+  api:
+    container_name: le_21_api
+    build: ./api
+    working_dir: /app
+    environment:
+      - APP_ENV=dev
+      - COMPOSER_ALLOW_SUPERUSER=1
+      - DATABASE_URL=mysql://le_21:le_21@db:3306/le_21?serverVersion=8.0
+    volumes:
+      - ./api:/app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+
+  db:
+    container_name: le_21_db
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=le_21
+      - MYSQL_USER=le_21
+      - MYSQL_PASSWORD=le_21
+    ports:
+      - '3306:3306'
+    volumes:
+      - le21_dbdata:/var/lib/mysql
+
+volumes:
+  le21_dbdata:

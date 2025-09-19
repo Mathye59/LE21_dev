@@ -1,0 +1,123 @@
+name: Le_21
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: API (Symfony) + Front build
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: le_21
+          MYSQL_USER: le_21
+          MYSQL_PASSWORD: le_21
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------- API (Symfony dans api/) ----------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, intl, pdo_mysql
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-composer-${{ hashFiles('api/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP deps
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare test env (DB URL + schema)
+        working-directory: api
+        env:
+          APP_ENV: test
+          DATABASE_URL: "mysql://le_21:le_21@127.0.0.1:3306/le_21?serverVersion=8.0"
+        run: |
+          echo 'APP_ENV=test' > .env.test.local
+          echo 'DATABASE_URL="mysql://le_21:le_21@127.0.0.1:3306/le_21?serverVersion=8.0"' >> .env.test.local
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          # Si tu utilises des migrations :
+          # php bin/console doctrine:migrations:migrate -n --env=test
+          php bin/console doctrine:schema:create --env=test
+
+      - name: Run PHPUnit
+        working-directory: api
+        env:
+          APP_ENV: test
+        run: |
+          if [ -f bin/phpunit ]; then bin/phpunit --testdox; else vendor/bin/phpunit --testdox; fi
+
+      # ---------- FRONT (React à la racine) ----------
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cache Node
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install & Build Front
+        run: |
+          npm ci
+          npm run build
+
+  docker-build-push:
+    name: Build & Push API image
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # Tags automatiques (sha + latest). Tu peux ajouter des tags semver si besoin.
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_dev
+          tags: |
+            type=raw,value=latest
+            type=sha,format=long
+
+      - name: Build and push backend image (api/)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
