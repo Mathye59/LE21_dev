@@ -1,0 +1,96 @@
+name: LE21_dev CI/CD
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ----- API (Symfony dans api/) -----
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_mysql, intl
+          coverage: none
+
+      - name: Install deps
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Configure test DB URL
+        working-directory: api
+        run: echo 'DATABASE_URL="mysql://test:test@127.0.0.1:3306/test?serverVersion=8.4"' >> .env.test.local
+
+      - name: Run tests
+        working-directory: api
+        run: php bin/phpunit --testdox
+
+      # ----- Front (build check) -----
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install & Build front
+        run: |
+          npm ci
+          VITE_API_URL=http://localhost:8080 npm run build
+
+  docker-build-push:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # API image
+      - name: Build & push API
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: true
+          tags: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_api:latest
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_api:${{ github.sha }}
+
+      # Front image
+      - name: Build & push FRONT
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.front
+          push: true
+          build-args: |
+            VITE_API_URL=http://localhost:8080
+          tags: |
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_front:latest
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_front:${{ github.sha }}
+
