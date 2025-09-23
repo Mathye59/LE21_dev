@@ -89,3 +89,4 @@ jobs:
 
       - name: Push FRONT image
         run: docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_front:latest
+ 
