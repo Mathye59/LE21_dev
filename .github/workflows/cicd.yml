@@ -41,9 +41,9 @@ jobs:
         working-directory: api
         run: echo 'DATABASE_URL="mysql://test:test@127.0.0.1:3306/test?serverVersion=8.4"' >> .env.test.local
 
-      - name: Run tests
+      - name: Run PHPUnit
         working-directory: api
-        run: php bin/phpunit --testdox
+        run: vendor/bin/simple-phpunit --testdox
 
       # ----- Front (build check) -----
       - name: Setup Node
