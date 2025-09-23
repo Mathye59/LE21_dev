@@ -69,7 +69,7 @@ jobs:
         uses: docker/login-action@v3
         with:
             registry: docker.io
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            username: mathye59
             password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
 
@@ -81,8 +81,8 @@ jobs:
           file: ./api/Dockerfile
           push: true
           tags: |
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_api:latest
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_api:${{ github.sha }}
+            docker.io/mathye59/le21_api:latest
+            docker.io/mathye59/le21_api:${{ github.sha }}
  
       # Front image
       - name: Build & push FRONT
@@ -94,6 +94,6 @@ jobs:
           build-args: |
             VITE_API_URL=http://localhost:8080
           tags: |
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_front:latest
-            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/le21_front:${{ github.sha }}
+            docker.io/mathye59/le21_front:latest
+            docker.io/mathye59/le21_front:${{ github.sha }}
 
