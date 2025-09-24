@@ -4,7 +4,10 @@ namespace App\Entity;
 
 use App\Repository\FlashRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: FlashRepository::class)]
 class Flash
 {
@@ -29,6 +32,14 @@ class Flash
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
+
+    // ajout Vich pour image
+    #[Vich\UploadableField(mapping: 'flash_images', fileNameProperty: 'imageName')]
+    private ?File $imageFile = null;
+
+    //mettre à jour la date de modification à chaque upload
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -92,6 +103,30 @@ class Flash
     {
         $this->imageName = $imageName;
 
+        return $this;
+    }
+
+    // ajout Vich pour image
+        public function setImageFile(?File $file): void
+    {
+        $this->imageFile = $file;
+        // Important: si on remplace l'image d'un flash existant, on touche updatedAt
+        if ($file !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }

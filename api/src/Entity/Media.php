@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[Vich\Uploadable]
 class Media
 {
     #[ORM\Id]
@@ -27,6 +30,10 @@ class Media
      */
     #[ORM\OneToMany(targetEntity: CarrouselSlide::class, mappedBy: 'media')]
     private Collection $carrouselSlides;
+    
+    // ajout Vich pour image
+     #[Vich\UploadableField(mapping: 'media_files', fileNameProperty: 'filename')]
+    private ?File $file = null; // <— NON persisté, juste pour l’upload
 
     public function __construct()
     {
@@ -90,5 +97,13 @@ class Media
         }
 
         return $this;
+    }
+    // ajout Vich pour image
+    public function setFile(?File $file): void 
+    { $this->file = $file; 
+    }
+
+    public function getFile(): ?File 
+    { return $this->file; 
     }
 }

@@ -6,7 +6,10 @@ use App\Repository\EntrepriseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
 class Entreprise
 {
@@ -29,6 +32,13 @@ class Entreprise
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $horaires = null;
+
+    // ajout Vich pour image
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logoName = null;   // nom de fichier STOCKÉ en BDD
+
+    #[Vich\UploadableField(mapping: 'company_logos', fileNameProperty: 'logoName')]
+    private ?File $logoFile = null;     // fichier NON persisté (clé multipart: logoFile)
 
     /**
      * @var Collection<int, Tatoueur>
@@ -135,4 +145,25 @@ class Entreprise
 
         return $this;
     }
+    // ajout Vich pour image
+    public function getLogoName(): ?string 
+    { 
+        return $this->logoName;
+    }
+
+    public function setLogoName(?string $name): static 
+    { 
+        $this->logoName = $name; return $this; 
+    }
+
+    public function setLogoFile(?File $file): void
+    {
+        $this->logoFile = $file;
+    }
+
+    public function getLogoFile(): ?File 
+    { 
+        return $this->logoFile;
+     }
+
 }
