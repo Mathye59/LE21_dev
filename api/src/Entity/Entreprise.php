@@ -8,7 +8,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use ApiPlatform\Metadata\ApiResource;
 
+#[ApiResource]
 #[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
 class Entreprise
