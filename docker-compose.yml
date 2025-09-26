@@ -33,14 +33,14 @@ services:
     ports:
       - "8080:80"   
     volumes:
-      - ./api:/var/www/html   # ⚠️ essentiel : monte le code (src/Entity visible dans le conteneur)
+      - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
 
 
   front:
     container_name: le21_front
     build:
-      context: ./front
-      dockerfile: ../Dockerfile.front
+      context: .
+      dockerfile: Dockerfile.front 
       args:
         VITE_API_URL: "http://127.0.0.1:8080"
     ports:
