@@ -3,9 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Carrousel;
+use App\Form\CarrouselSlideType; // <= IMPORTANT
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class CarrouselCrudController extends AbstractCrudController
@@ -15,14 +15,15 @@ class CarrouselCrudController extends AbstractCrudController
         return Carrousel::class;
     }
 
-    /*
     public function configureFields(string $pageName): iterable
     {
-        return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
-        ];
+        // adapte si ton Carrousel a un autre champ (titre, slug, etc.)
+        yield TextField::new('titre', 'Titre')->hideOnIndex();
+
+        yield CollectionField::new('carrouselSlides', 'Slides')
+            ->setEntryType(CarrouselSlideType::class) // <= le form type ci-dessous
+            ->allowAdd()
+            ->allowDelete()
+            ->setFormTypeOptions(['by_reference' => false]);
     }
-    */
 }

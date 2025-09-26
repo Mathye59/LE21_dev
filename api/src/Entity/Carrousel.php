@@ -32,12 +32,22 @@ class Carrousel
     /**
      * @var Collection<int, CarrouselSlide>
      */
-    #[ORM\OneToMany(targetEntity: CarrouselSlide::class, mappedBy: 'carrousel')]
+    #[ORM\OneToMany(
+        mappedBy: 'carrousel',
+        targetEntity: CarrouselSlide::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $carrouselSlides;
 
     public function __construct()
     {
         $this->carrouselSlides = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->titre ?: 'Carrousel #'.$this->id;
     }
 
     public function getId(): ?int
@@ -50,7 +60,7 @@ class Carrousel
         return $this->titre;
     }
 
-    public function setTitre(?string $titre): static
+    public function setTitre(?string $titre): self
     {
         $this->titre = $titre;
 
@@ -62,7 +72,7 @@ class Carrousel
         return $this->autoplay;
     }
 
-    public function setAutoplay(?bool $autoplay): static
+    public function setAutoplay(?bool $autoplay): self
     {
         $this->autoplay = $autoplay;
 
@@ -74,7 +84,7 @@ class Carrousel
         return $this->intervalMs;
     }
 
-    public function setIntervalMs(?int $intervalMs): static
+    public function setIntervalMs(?int $intervalMs): self
     {
         $this->intervalMs = $intervalMs;
 
@@ -86,7 +96,7 @@ class Carrousel
         return $this->isActive;
     }
 
-    public function setIsActive(?bool $isActive): static
+    public function setIsActive(?bool $isActive): self
     {
         $this->isActive = $isActive;
 
@@ -101,7 +111,7 @@ class Carrousel
         return $this->carrouselSlides;
     }
 
-    public function addCarrouselSlide(CarrouselSlide $carrouselSlide): static
+    public function addCarrouselSlide(CarrouselSlide $carrouselSlide): self
     {
         if (!$this->carrouselSlides->contains($carrouselSlide)) {
             $this->carrouselSlides->add($carrouselSlide);
@@ -111,10 +121,11 @@ class Carrousel
         return $this;
     }
 
-    public function removeCarrouselSlide(CarrouselSlide $carrouselSlide): static
+    public function removeCarrouselSlide(CarrouselSlide $carrouselSlide): self
     {
         if ($this->carrouselSlides->removeElement($carrouselSlide)) {
-            // set the owning side to null (unless already changed)
+            // ⚠️ Si la JoinColumn dans CarrouselSlide est nullable=false,
+            // NE PAS mettre à null : compte sur orphanRemoval pour supprimer l’orphelin.
             if ($carrouselSlide->getCarrousel() === $this) {
                 $carrouselSlide->setCarrousel(null);
             }
@@ -123,3 +134,4 @@ class Carrousel
         return $this;
     }
 }
+

@@ -24,6 +24,9 @@ class Commentaire
     #[ORM\Column]
     private ?\DateTimeImmutable $date = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $approuve = false;
+
     #[ORM\ManyToOne(inversedBy: 'commentaires')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ArticleBlog $article = null;
@@ -67,6 +70,16 @@ class Commentaire
         $this->date = $date;
 
         return $this;
+    }
+
+    public function isApprouve(): bool
+    { 
+        return $this->approuve; 
+    }
+
+    public function setApprouve(bool $v): self
+    {
+         $this->approuve = $v; return $this; 
     }
 
     public function getArticle(): ?ArticleBlog

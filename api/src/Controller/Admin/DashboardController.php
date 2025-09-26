@@ -2,52 +2,76 @@
 
 namespace App\Controller\Admin;
 
-use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use App\Entity\ArticleAccueil;
+use App\Entity\ArticleBlog;
+use App\Entity\Carrousel;
+use App\Entity\CarrouselSlide;
+use App\Entity\Categorie;
+use App\Entity\Commentaire;
+use App\Entity\Entreprise;
+use App\Entity\Flash;
+use App\Entity\Media;
+use App\Entity\Tatoueur;
+// use App\Entity\User; // décommente si tu as créé User
+
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin', name: 'admin')]
 class DashboardController extends AbstractDashboardController
-{   
-    #[Route('', name: 'admin_index')]
+{
+    public function __construct(
+        private AdminUrlGenerator $adminUrlGenerator,
+    ) {}
+
+    #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        
-        return parent::index();
+        // Redirige par défaut vers le carrousel (modifiable)
+        $url = $this->adminUrlGenerator
+            ->setController(CarrouselCrudController::class)
+            ->generateUrl();
 
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // 1.1) If you have enabled the "pretty URLs" feature:
-        // return $this->redirectToRoute('admin_user_index');
-        //
-        // 1.2) Same example but using the "ugly URLs" that were used in previous EasyAdmin versions:
-        // $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        // return $this->redirect($adminUrlGenerator->setController(OneOfYourCrudController::class)->generateUrl());
-
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirectToRoute('...');
-        // }
-
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        // return $this->render('some/path/my-dashboard.html.twig');
+        return $this->redirect($url);
     }
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Api');
+            ->setTitle('Site Le 21 — Administration');
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+
+        // 1) PAGE D’ACCUEIL
+        yield MenuItem::section('Page d’accueil');
+        yield MenuItem::linkToCrud('Carrousel', 'fa fa-images', Carrousel::class);
+        // Si tu veux éditer les slides via un CRUD séparé, laisse visible ; sinon masque-le
+        // yield MenuItem::linkToCrud('Slides', 'fa fa-image', CarrouselSlide::class)->setPermission('ROLE_ADMIN');
+        yield MenuItem::linkToCrud('Articles d’accueil', 'fa fa-newspaper', ArticleAccueil::class);
+
+        // 2) PAGE FLASH
+        yield MenuItem::section('Page Flash');
+        yield MenuItem::linkToCrud('Flashes', 'fa fa-bolt', Flash::class);
+        yield MenuItem::linkToCrud('Catégories', 'fa fa-tags', Categorie::class);
+        yield MenuItem::linkToCrud('Médias', 'fa fa-image', Media::class);
+
+        // 3) BLOG
+        yield MenuItem::section('Blog');
+        yield MenuItem::linkToCrud('Articles de blog', 'fa fa-pen', ArticleBlog::class);
+        yield MenuItem::linkToCrud('Commentaires', 'fa fa-comments', Commentaire::class);
+
+        // 4) ADMIN
+        yield MenuItem::section('Administration')->setPermission('ROLE_ADMIN');
+        yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class)->setPermission('ROLE_ADMIN');
+        // if (class_exists(User::class)) {
+        //     yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-user-shield', User::class)->setPermission('ROLE_ADMIN');
+        // }
+        yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class)->setPermission('ROLE_ADMIN');
     }
 }
