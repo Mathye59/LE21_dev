@@ -39,8 +39,8 @@ services:
   front:
     container_name: le21_front
     build:
-      context: .
-      dockerfile: Dockerfile.front
+      context: ./front
+      dockerfile: ../Dockerfile.front
       args:
         VITE_API_URL: "http://127.0.0.1:8080"
     ports:
