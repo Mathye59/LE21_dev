@@ -50,23 +50,24 @@ class DashboardController extends AbstractDashboardController
 
         // 1) PAGE D’ACCUEIL
         yield MenuItem::section('Page d’accueil');
-        yield MenuItem::linkToCrud('Carrousel', 'fa fa-images', Carrousel::class);
-        // Si tu veux éditer les slides via un CRUD séparé, laisse visible ; sinon masque-le
-        // yield MenuItem::linkToCrud('Slides', 'fa fa-image', CarrouselSlide::class)->setPermission('ROLE_ADMIN');
-        yield MenuItem::linkToCrud('Articles d’accueil', 'fa fa-newspaper', ArticleAccueil::class);
+        yield MenuItem::linkToCrud('Carrousel', 'fa fa-images', Carrousel::class); //gestion des slides inclus
+        yield MenuItem::linkToCrud('Articles d’accueil', 'fa fa-newspaper', ArticleAccueil::class); //gestion des articles de l'accueil
 
         // 2) PAGE FLASH
         yield MenuItem::section('Page Flash');
-        yield MenuItem::linkToCrud('Flashes', 'fa fa-bolt', Flash::class);
-        yield MenuItem::linkToCrud('Catégories', 'fa fa-tags', Categorie::class);
-        yield MenuItem::linkToCrud('Médias', 'fa fa-image', Media::class);
+        yield MenuItem::linkToCrud('Flashes', 'fa fa-bolt', Flash::class); //gestion Flashs
+        yield MenuItem::linkToCrud('Catégories', 'fa fa-tags', Categorie::class); //gestion catégories
 
-        // 3) BLOG
+        // 3) MÉDIAS 
+        yield MenuItem::section('Médias');
+        yield MenuItem::linkToCrud('Médias', 'fa fa-image', Media::class); //gestion médias
+
+        // 4) BLOG
         yield MenuItem::section('Blog');
-        yield MenuItem::linkToCrud('Articles de blog', 'fa fa-pen', ArticleBlog::class);
-        yield MenuItem::linkToCrud('Commentaires', 'fa fa-comments', Commentaire::class);
+        yield MenuItem::linkToCrud('Articles de blog', 'fa fa-pen', ArticleBlog::class);    //gestion articles de blog
+        yield MenuItem::linkToCrud('Commentaires', 'fa fa-comments', Commentaire::class);   //gestion commentaires des articles (validation)
 
-        // 4) ADMIN
+        // 5) ADMIN
         yield MenuItem::section('Administration')->setPermission('ROLE_ADMIN');
         yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class)->setPermission('ROLE_ADMIN');
         // if (class_exists(User::class)) {

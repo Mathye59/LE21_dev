@@ -25,7 +25,7 @@ class CarrouselSlideType extends AbstractType
             ])
             ->add('media', EntityType::class, [
                 'class' => Media::class,
-                'choice_label' => 'filename', // ou un __toString() dans Media
+                'choice_label' => 'Nom du fichier', // ou un __toString() dans Media
                 'placeholder' => '— Choisir un média —',
                 'label' => 'Média',
             ]);
