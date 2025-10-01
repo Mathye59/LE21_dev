@@ -18,22 +18,22 @@ services:
       - dbdata:/var/lib/mysql
 
   api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    container_name: le21_api
-    environment:
-      APP_ENV: dev
-      APP_DEBUG: 1
-      APP_SECRET: dev
-      DATABASE_URL: "mysql://le_21:le_21@db:3306/le_21?serverVersion=8.0"
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8080:80"   
-    volumes:
-      - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
+      build:
+        context: ./api
+        dockerfile: Dockerfile
+      container_name: le21_api
+      environment:
+        APP_ENV: dev
+        APP_DEBUG: 1
+        APP_SECRET: dev
+        DATABASE_URL: "mysql://le_21:le_21@db:3306/le_21?serverVersion=8.0"
+      depends_on:
+        db:
+          condition: service_healthy
+      ports:
+        - "8080:80"   
+      volumes:
+        - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
 
 
   front:

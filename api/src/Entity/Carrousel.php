@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\CarrouselRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Media;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
 
-#[ApiResource]
+
 #[ORM\Entity(repositoryClass: CarrouselRepository::class)]
+#[ORM\Table(name: 'carrousel')]
+#[ORM\UniqueConstraint(name: 'uniq_carrousel_position', columns: ['position'])]
 class Carrousel
 {
     #[ORM\Id]
@@ -17,121 +17,32 @@ class Carrousel
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $titre = null;
+    // Média lié (création possible inline grâce au cascade persist)
+    #[ORM\ManyToOne(targetEntity: Media::class, inversedBy: 'carrousel', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Media $media = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $autoplay = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $title = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $intervalMs = null;
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $isActive = true;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $isActive = null;
+    // Ordre dans le carrousel (1..N)
+    #[ORM\Column(type: 'integer')]
+    private int $position = 0;
 
-    /**
-     * @var Collection<int, CarrouselSlide>
-     */
-    #[ORM\OneToMany(
-        mappedBy: 'carrousel',
-        targetEntity: CarrouselSlide::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
-    private Collection $carrouselSlides;
+    public function getId(): ?int { return $this->id; }
 
-    public function __construct()
-    {
-        $this->carrouselSlides = new ArrayCollection();
-    }
+    public function getMedia(): ?Media { return $this->media; }
+    public function setMedia(?Media $media): self { $this->media = $media; return $this; }
 
-    public function __toString(): string
-    {
-        return $this->titre ?: 'Carrousel #'.$this->id;
-    }
+    public function getTitle(): ?string { return $this->title; }
+    public function setTitle(?string $title): self { $this->title = $title; return $this; }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function isActive(): bool { return $this->isActive; }
+    public function setIsActive(bool $isActive): self { $this->isActive = $isActive; return $this; }
 
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(?string $titre): self
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function isAutoplay(): ?bool
-    {
-        return $this->autoplay;
-    }
-
-    public function setAutoplay(?bool $autoplay): self
-    {
-        $this->autoplay = $autoplay;
-
-        return $this;
-    }
-
-    public function getIntervalMs(): ?int
-    {
-        return $this->intervalMs;
-    }
-
-    public function setIntervalMs(?int $intervalMs): self
-    {
-        $this->intervalMs = $intervalMs;
-
-        return $this;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(?bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CarrouselSlide>
-     */
-    public function getCarrouselSlides(): Collection
-    {
-        return $this->carrouselSlides;
-    }
-
-    public function addCarrouselSlide(CarrouselSlide $carrouselSlide): self
-    {
-        if (!$this->carrouselSlides->contains($carrouselSlide)) {
-            $this->carrouselSlides->add($carrouselSlide);
-            $carrouselSlide->setCarrousel($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCarrouselSlide(CarrouselSlide $carrouselSlide): self
-    {
-        if ($this->carrouselSlides->removeElement($carrouselSlide)) {
-            // ⚠️ Si la JoinColumn dans CarrouselSlide est nullable=false,
-            // NE PAS mettre à null : compte sur orphanRemoval pour supprimer l’orphelin.
-            if ($carrouselSlide->getCarrousel() === $this) {
-                $carrouselSlide->setCarrousel(null);
-            }
-        }
-
-        return $this;
-    }
+    public function getPosition(): int { return $this->position; }
+    public function setPosition(int $position): self { $this->position = $position; return $this; }
 }
-

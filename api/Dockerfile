@@ -1,7 +1,12 @@
 FROM php:8.2-apache
 
 # Extensions nécessaires
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo pdo_mysql \
+ && docker-php-ext-configure intl \
+ && docker-php-ext-install intl
 
 # Apache: rewrite + DocumentRoot /public
 RUN a2enmod rewrite
@@ -30,3 +35,14 @@ CMD bash -lc '\
   php bin/console cache:clear || true ; \
   exec apache2-foreground \
 '
+
+# Limites d'upload PHP pour envoi plusieurs médias
+RUN { \
+  echo 'file_uploads=On'; \
+  echo 'upload_max_filesize=50M'; \   
+  echo 'post_max_size=500M'; \        
+  echo 'max_file_uploads=10'; \       
+  echo 'memory_limit=512M'; \
+} > /usr/local/etc/php/conf.d/uploads.ini
+# Éviter la limite Apache sinon blocage média
+RUN printf '\nLimitRequestBody 262144000\n' >> /etc/apache2/apache2.conf

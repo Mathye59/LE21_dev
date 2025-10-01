@@ -2,18 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Carrousel;
 use App\Repository\MediaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ApiResource]
-#[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[Vich\Uploadable]
+#[ORM\Entity(repositoryClass: MediaRepository::class)]
 class Media
 {
     #[ORM\Id]
@@ -28,18 +29,21 @@ class Media
     private ?\DateTimeImmutable $date = null;
 
     /**
-     * @var Collection<int, CarrouselSlide>
+     * @var Collection<int, Carrousel>
      */
-    #[ORM\OneToMany(targetEntity: CarrouselSlide::class, mappedBy: 'media')]
-    private Collection $carrouselSlides;
-    
-    // ajout Vich pour image
-     #[Vich\UploadableField(mapping: 'media_files', fileNameProperty: 'filename')]
-    private ?File $file = null; // <— NON persisté, juste pour l’upload
+    #[ORM\OneToMany(targetEntity: Carrousel::class, mappedBy: 'media')]
+    private Collection $carrousel;
+
+    /**
+     * Fichier uploadé (non persisté). 
+     */
+    #[Vich\UploadableField(mapping: 'media_files', fileNameProperty: 'filename')]
+    private ?File $file = null;
 
     public function __construct()
     {
-        $this->carrouselSlides = new ArrayCollection();
+        $this->carrousel = new ArrayCollection();
+        $this->date = new \DateTimeImmutable(); // initialise la date d’ajout
     }
 
     public function getId(): ?int
@@ -52,10 +56,9 @@ class Media
         return $this->filename;
     }
 
-    public function setFilename(?string $filename): static
+    public function setFilename(?string $filename): self
     {
         $this->filename = $filename;
-
         return $this;
     }
 
@@ -64,48 +67,58 @@ class Media
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(\DateTimeImmutable $date): self
     {
         $this->date = $date;
-
         return $this;
     }
 
     /**
-     * @return Collection<int, CarrouselSlide>
+     * @return Collection<int, Carrousel>
      */
-    public function getCarrouselSlides(): Collection
+    public function getCarrousel(): Collection
     {
-        return $this->carrouselSlides;
+        return $this->carrousel;
     }
 
-    public function addCarrouselSlide(CarrouselSlide $carrouselSlide): static
+    public function addCarrousel(Carrousel $carrousel): self
     {
-        if (!$this->carrouselSlides->contains($carrouselSlide)) {
-            $this->carrouselSlides->add($carrouselSlide);
-            $carrouselSlide->setMedia($this);
+        if (!$this->carrousel->contains($carrousel)) {
+            $this->carrousel->add($carrousel);
+            $carrousel->setMedia($this);
         }
-
         return $this;
     }
 
-    public function removeCarrouselSlide(CarrouselSlide $carrouselSlide): static
+    public function removeCarrousel(Carrousel $carrousel): self
     {
-        if ($this->carrouselSlides->removeElement($carrouselSlide)) {
-            // set the owning side to null (unless already changed)
-            if ($carrouselSlide->getMedia() === $this) {
-                $carrouselSlide->setMedia(null);
+        if ($this->carrousel->removeElement($carrousel)) {
+            if ($carrousel->getMedia() === $this) {
+                $carrousel->setMedia(null);
             }
         }
-
         return $this;
     }
-    // ajout Vich pour image
-    public function setFile(?File $file): void 
-    { $this->file = $file; 
+
+    /** Vich: setter du fichier uploadé */
+    public function setFile(?File $file): void
+    {
+        $this->file = $file;
+
+        if ($file !== null) {
+            // important: déclenche une mise à jour pour que Vich traite le fichier
+            $this->date = new \DateTimeImmutable();
+        }
     }
 
-    public function getFile(): ?File 
-    { return $this->file; 
+    public function getFile(): ?File
+    {
+        return $this->file;
     }
+    public function __toString(): string
+    {
+        return (string) $this->getFilename();
+    }
+
 }
+
