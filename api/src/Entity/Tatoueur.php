@@ -48,6 +48,9 @@ class Tatoueur
     #[ORM\OneToMany(targetEntity: FormContact::class, mappedBy: 'tatoueur')]
     private Collection $formContacts;
 
+    #[ORM\Column(length: 25, nullable: true)]
+    private ?string $pseudo = null;
+
     public function __construct()
     {
         $this->articleBlogs = new ArrayCollection();
@@ -194,6 +197,18 @@ class Tatoueur
                 $formContact->setTatoueur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(?string $pseudo): static
+    {
+        $this->pseudo = $pseudo;
 
         return $this;
     }

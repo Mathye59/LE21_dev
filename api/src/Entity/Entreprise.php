@@ -168,4 +168,8 @@ class Entreprise
         return $this->logoFile;
      }
 
+     public function __toString(): string
+    {
+        return (string) ($this->getNom() ?? '');
+    }
 }
