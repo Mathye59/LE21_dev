@@ -12,6 +12,7 @@ use App\Entity\Entreprise;
 use App\Entity\Flash;
 use App\Entity\Media;
 use App\Entity\Tatoueur;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 // use App\Entity\User; // décommente si tu as créé User
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -41,7 +42,8 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Site Le 21 — Administration');
+            ->setTitle('Site Le 21 — Administration')
+            ->setLocales(['fr']);
             
     }
 
@@ -76,9 +78,9 @@ class DashboardController extends AbstractDashboardController
         // }
         yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class);//->setPermission('ROLE_ADMIN')
     }
-    // public function configureAssets(): Assets
-    // {
-    //     return Assets::new()
-    //         ->addCssFile('assets/css/admin.css');
-    // }
+    public function configureAssets(): Assets
+    {
+        return Assets::new()
+            ->addCssFile('styles/admin.css');
+    }
 }

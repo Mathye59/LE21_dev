@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Entity\Carrousel;
 use App\Repository\MediaRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -29,22 +27,27 @@ class Media
     private ?\DateTimeImmutable $date = null;
 
     /**
-     * @var Collection<int, Carrousel>
-     */
-    #[ORM\OneToMany(targetEntity: Carrousel::class, mappedBy: 'media')]
-    private Collection $carrousel;
-
-    /**
-     * Fichier uploadé (non persisté). 
+     * Fichier uploadé (non persisté).
+     * Vich mettra à jour $filename via fileNameProperty.
      */
     #[Vich\UploadableField(mapping: 'media_files', fileNameProperty: 'filename')]
     private ?File $file = null;
 
+    /**
+     * Lien 1–1 vers la fiche Carrousel correspondante.
+     * Ici, Media est le côté inversé (mappedBy='media').
+     * Le côté propriétaire doit être: Carrousel::$media (#[ORM\OneToOne(inversedBy: 'carrousel', ...)]).
+     */
+    #[ORM\OneToOne(mappedBy: 'media', targetEntity: Carrousel::class, cascade: ['remove'])]
+    private ?Carrousel $carrousel = null;
+
     public function __construct()
     {
-        $this->carrousel = new ArrayCollection();
-        $this->date = new \DateTimeImmutable(); // initialise la date d’ajout
+        // initialise la date d’ajout
+        $this->date = new \DateTimeImmutable();
     }
+
+    /* ------------------------- Getters / Setters ------------------------- */
 
     public function getId(): ?int
     {
@@ -74,39 +77,15 @@ class Media
     }
 
     /**
-     * @return Collection<int, Carrousel>
+     * Setter Vich : assigne le fichier uploadé (non mappé).
+     * Met à jour la date pour déclencher le traitement par Vich.
      */
-    public function getCarrousel(): Collection
-    {
-        return $this->carrousel;
-    }
-
-    public function addCarrousel(Carrousel $carrousel): self
-    {
-        if (!$this->carrousel->contains($carrousel)) {
-            $this->carrousel->add($carrousel);
-            $carrousel->setMedia($this);
-        }
-        return $this;
-    }
-
-    public function removeCarrousel(Carrousel $carrousel): self
-    {
-        if ($this->carrousel->removeElement($carrousel)) {
-            if ($carrousel->getMedia() === $this) {
-                $carrousel->setMedia(null);
-            }
-        }
-        return $this;
-    }
-
-    /** Vich: setter du fichier uploadé */
     public function setFile(?File $file): void
     {
         $this->file = $file;
 
-        if ($file !== null) {
-            // important: déclenche une mise à jour pour que Vich traite le fichier
+        if (null !== $file) {
+            // force une mise à jour pour que Vich traite le fichier
             $this->date = new \DateTimeImmutable();
         }
     }
@@ -115,10 +94,38 @@ class Media
     {
         return $this->file;
     }
-    public function __toString(): string
+
+    public function getCarrousel(): ?Carrousel
     {
-        return (string) $this->getFilename();
+        return $this->carrousel;
     }
 
+    public function setCarrousel(?Carrousel $carrousel): self
+    {
+        // gère la relation bidirectionnelle proprement
+        if ($this->carrousel === $carrousel) {
+            return $this;
+        }
+
+         // détache l’ancien côté inverse proprement
+        if ($this->carrousel !== null && $this->carrousel->getMedia() === $this) {
+            $this->carrousel->setMedia(null);
+        }
+
+        $this->carrousel = $carrousel;
+
+
+        // rattache le nouveau côté propriétaire
+        if ($carrousel && $carrousel->getMedia() !== $this) {
+            $carrousel->setMedia($this);
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->filename ?? 'media#'.$this->id);
+    }
 }
 

@@ -10,7 +10,9 @@ framework:
         enabled: true
         default_path: '%kernel.project_dir%/translations'
         fallbacks: ['fr']
-    
+    asset_mapper:
+         paths:
+            - 'assets/'
     #esi: true
     #fragments: true
 

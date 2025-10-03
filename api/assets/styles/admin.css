@@ -1,0 +1,138 @@
+/* =======================
+   LE21 — thème EasyAdmin
+   Neutralisation des fonds blancs + surfaces
+   ======================= */
+
+/* Fond global (le gradient que tu utilises ailleurs) */
+:root {
+  /* tes variables déclarées plus haut… */
+  --le21-bg: linear-gradient(
+      90deg,
+      rgba(44, 82, 71, 1) 7%,
+      rgba(15, 52, 38, 1) 35%,
+      rgba(12, 41, 30, 1) 68%,
+      rgba(9, 31, 22, 1) 100%
+  );
+  --le21-surface: #0f3426;      /* surface sombre mais lisible */
+  --le21-surface-2: #1d4b3b;    /* surface + contrastée (headers, survol) */
+  --le21-border: #7c734f;       /* ton brun léger pour bordures */
+  --le21-text: #f7f0ba;         /* lemon chiffon */
+  --le21-text-2: #be9e66;       /* accents */
+}
+
+/* Appliquer le fond global et enlever le blanc résiduel */
+html, body {
+  background: var(--le21-bg) fixed !important;
+  color: var(--le21-text);
+}
+
+/* Tout ce qui contient le contenu EA */
+#ea-app,
+.ea-main,
+.content-wrapper,
+.content,
+.content [class*="content-"],
+.ea-content,
+.ea-dark-scheme .ea-content {
+  background: transparent !important;
+  color: var(--le21-text);
+}
+
+/* En-têtes / titres */
+.content-header,
+.page-title,
+.page-header,
+.ea-page-title {
+  background: transparent !important;
+  color: var(--le21-text);
+  border: 0;
+}
+
+/* Cartes/panneaux (filtres, formulaires, modales…) */
+.card,
+.ea-card,
+.content-panel,
+.panel,
+.modal-content {
+  background: var(--le21-surface) !important;
+  border: 1px solid var(--le21-border) !important;
+  color: var(--le21-text);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+
+/* Tableau (datagrid) */
+.datagrid {
+  background: transparent !important;
+  border: 1px solid transparent;
+}
+
+/* En-tête du tableau */
+.datagrid thead th {
+  background: var(--le21-surface-2) !important;
+  color: var(--le21-text);
+  border-color: var(--le21-border) !important;
+}
+
+/* Lignes */
+.datagrid tbody tr {
+  background: transparent !important;
+}
+
+.datagrid tbody tr:hover {
+  background: rgba(255,255,255, .04) !important;
+}
+
+/* Cellules */
+.datagrid td,
+.datagrid th {
+  border-color: rgba(255,255,255,.08) !important;
+  color: var(--le21-text);
+}
+
+/* Boutons / switches pour rester dans la charte */
+.btn,
+.button,
+.ea-button {
+  background: var(--le21-surface-2);
+  color: var(--le21-text);
+  border: 1px solid var(--le21-border);
+}
+.btn:hover,
+.ea-button:hover {
+  filter: brightness(1.08);
+}
+
+.form-switch .form-check-input {
+  background-color: rgba(190, 158, 102, .25);
+  border-color: var(--le21-border);
+}
+.form-switch .form-check-input:checked {
+  background-color: #be9e66;
+  border-color: #be9e66;
+}
+
+/* Encarts de pagination, filtres, alertes */
+.alert,
+.pagination,
+.filter-toggler,
+.filters,
+.sorting {
+  background: transparent !important;
+  color: var(--le21-text);
+  border: 0 !important;
+}
+
+/* Liens */
+a {
+  color: var(--le21-text-2);
+}
+a:hover {
+  color: #e9dfae;
+}
+
+/* Placeholders (squelettes de chargement) */
+.placeholder,
+.placeholder-wave,
+.placeholder-glow {
+  background: rgba(255,255,255,.06) !important;
+}

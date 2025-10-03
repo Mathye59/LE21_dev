@@ -37,6 +37,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MediaCrudController extends AbstractCrudController
 {
+    public function __construct(private CarrouselRepository $carrouselRepo) {}
     /**
      * L’entité gérée par ce CRUD.
      */
@@ -55,7 +56,8 @@ class MediaCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Médias')
             ->setPageTitle(Crud::PAGE_INDEX, 'Médias')
             ->setPageTitle(Crud::PAGE_NEW, 'Importer des médias')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le média');
+            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le média')
+            ->setPaginatorPageSize(15) ;       // <= 15 par page
     }
 
     /**
@@ -151,6 +153,7 @@ class MediaCrudController extends AbstractCrudController
      * - lit le champ non mappé "files[]"
      * - crée 1 entité Media par fichier
      * - Vich s’occupe du move + nommage via setFile()
+     * + synchronisation avec carrousel
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -167,97 +170,170 @@ class MediaCrudController extends AbstractCrudController
             }
         }
 
+        // MODE MULTI-UPLOAD (champ non mappé "files[]")
         if (!empty($files)) {
+            // position de départ = MAX(position)
+            $pos = (int) $this->carrouselRepo->getMaxPosition();
+            $imported = 0;
+            $linked   = 0;
+
             foreach ($files as $uploaded) {
                 if (!$uploaded) {
                     continue;
                 }
-                $m = new Media();
-                $m->setFile($uploaded); // Vich : move + maj filename
-                $em->persist($m);
-            }
-            $em->flush();
 
-            $this->addFlash('success', sprintf('%d fichier(s) importé(s).', count($files)));
-            return; // on n’utilise pas $entityInstance en mode multi-upload
+            // Crée le Media (Vich gère move+filename via setFile)
+            $m = new Media();
+            $m->setFile($uploaded);
+            $em->persist($m);
+            $imported++;
+
+            // Crée l’entrée Carrousel associée si elle n’existe pas
+            $exists = $em->getRepository(Carrousel::class)->findOneBy(['media' => $m]);
+            if (!$exists) {
+                $c = new Carrousel();
+                $c->setMedia($m);
+                $c->setTitle(pathinfo((string) $m->getFilename(), PATHINFO_FILENAME) ?: '');
+                $c->setIsActive(false);       // inactif par défaut
+                $c->setPosition(++$pos);      // à la suite
+                $em->persist($c);
+                $linked++;
+            }
         }
 
-        // Aucun files[] → comportement par défaut
+        $em->flush();
+
+        $this->addFlash('success', sprintf('%d fichier(s) importé(s), %d ajouté(s) au carrousel (inactifs).', $imported, $linked));
+        return; // on ne passe pas par le parent en mode multi-upload
+    }
+
+        // MODE UNITAIRE (pas de files[] → on laisse EA créer le Media)
         parent::persistEntity($em, $entityInstance);
+
+        if ($entityInstance instanceof Media) {
+            // S’assure qu’il existe une ligne Carrousel pour ce média
+            $exists = $em->getRepository(Carrousel::class)->findOneBy(['media' => $entityInstance]);
+            if (!$exists) {
+                $pos = (int) $this->carrouselRepo->getMaxPosition() + 1;
+
+                $c = new Carrousel();
+                $c->setMedia($entityInstance);
+                $c->setTitle(pathinfo((string) $entityInstance->getFilename(), PATHINFO_FILENAME) ?: '');
+                $c->setIsActive(false);
+                $c->setPosition($pos);
+
+                $em->persist($c);
+                $em->flush();
+
+                $this->addFlash('info', 'Le média a été synchronisé automatiquement dans le carrousel (inactif).');
+            }
+        }
     }
 
     /**
      * Édition : Vich remplace l’éventuel fichier si "file" est renseigné.
      */
-    public function updateEntity(EntityManagerInterface $em, $entityInstance): void
-    {
-        parent::updateEntity($em, $entityInstance);
+   public function updateEntity(EntityManagerInterface $em, $entityInstance): void
+{
+    parent::updateEntity($em, $entityInstance);
+
+    if ($entityInstance instanceof Media) {
+        $exists = $em->getRepository(Carrousel::class)->findOneBy(['media' => $entityInstance]);
+        if (!$exists) {
+            $pos = (int) $this->carrouselRepo->getMaxPosition() + 1;
+
+            $c = new Carrousel();
+            $c->setMedia($entityInstance);
+            $c->setTitle(pathinfo((string) $entityInstance->getFilename(), PATHINFO_FILENAME) ?: '');
+            $c->setIsActive(false);
+            $c->setPosition($pos);
+
+            $em->persist($c);
+            $em->flush();
+
+            $this->addFlash('info', 'Ce média a été synchronisé dans le carrousel (inactif).');
+        }
     }
+}
 
     /**
      * Action BATCH (index Média) :
      * crée une entrée Carrousel pour chaque média coché (position auto).
      */
     public function batchAddToCarousel(
-        AdminContext $context,
-        EntityManagerInterface $em,
-        CarrouselRepository $repo,
-        AdminUrlGenerator $url
-    ):  Response {
-        // URL de repli si jamais le referrer est null
-        $mediaIndexUrl = $url->setController(MediaCrudController::class)
-                            ->setAction(Crud::PAGE_INDEX)
-                            ->generateUrl();
+    AdminContext $context,
+    EntityManagerInterface $em,
+    CarrouselRepository $repo,
+    AdminUrlGenerator $url
+): Response {
+    $request = $context->getRequest();
 
-        // IDs cochés (peut être vide)
-        $ids = $context->getRequest()->request->all('entityIds');
-        if (!\is_array($ids) || empty($ids)) {
-            $this->addFlash('warning', 'Aucun média sélectionné.');
-            return $this->redirect($context->getReferrer() ?: $mediaIndexUrl);
+    // Récupère les IDs médias sélectionnés (tous les cas)
+    $ids = $request->request->all('entityIds');                 // cas EA récent
+    if (empty($ids)) {
+        $batchForm = $request->request->all('batch_form');      // cas EA plus ancien
+        if (\is_array($batchForm) && !empty($batchForm['entityIds'])) {
+            $ids = $batchForm['entityIds'];
         }
-
-        // Départ pour la position (MAX + 1, +2, ...)
-        $pos = (int) $repo->getMaxPosition();
-
-        $added = 0;
-        $skipped = 0;
-
-        // On récupère les médias sélectionnés
-        $medias = $em->getRepository(Media::class)->findBy(['id' => $ids]);
-
-        foreach ($medias as $m) {
-            // Skip si le média est déjà dans le carrousel
-            $exists = $em->getRepository(Carrousel::class)->findOneBy(['media' => $m]);
-            if ($exists) {
-                $skipped++;
-                continue;
-            }
-
-            $pos++;
-            $c = new Carrousel();
-            $c->setMedia($m);
-            $c->setTitle(pathinfo((string) $m->getFilename(), PATHINFO_FILENAME)); // optionnel
-            $c->setIsActive(true);
-            $c->setPosition($pos);
-
-            $em->persist($c);
-            $added++;
-        }
-        $em->flush();
-
-            // Message de résultat
-        if ($added > 0) {
-            $this->addFlash('success', sprintf('%d image(s) ajoutée(s) au carrousel.', $added));
-        }
-        if ($skipped > 0) {
-            $this->addFlash('info', sprintf('%d image(s) déjà présentes ont été ignorées.', $skipped));
-        }
-
-        // Redirection vers la liste du carrousel
-        $carrouselUrl = $url->setController(CarrouselCrudController::class)
-                            ->setAction(Crud::PAGE_INDEX)
-                            ->generateUrl();
-
-        return $this->redirect($carrouselUrl);
     }
+    if (\is_string($ids)) {                                     // cas "1,2,3"
+        $ids = array_filter(array_map('trim', explode(',', $ids)));
+    }
+    // Normalise : tableau d’entiers uniques
+    $ids = array_values(array_unique(array_map('intval', (array) $ids)));
+
+    // Si rien de coché → retour propre avec message
+    if (empty($ids)) {
+        $this->addFlash('warning', 'Aucun média sélectionné.');
+        $fallback = $url->setController(MediaCrudController::class)
+                        ->setAction(Crud::PAGE_INDEX)
+                        ->generateUrl();
+        return $this->redirect($context->getReferrer() ?: $fallback);
+    }
+
+    // Position de départ = MAX(position) 
+    $pos = (int) $repo->getMaxPosition();
+
+    $added   = 0;
+    $skipped = 0;
+
+    // Récupère les images cochées
+    $medias = $em->getRepository(Media::class)->findBy(['id' => $ids], ['id' => 'ASC']);
+
+    foreach ($medias as $m) {
+        // ignorer si déjà présent dans le carrousel
+        $exists = $em->getRepository(Carrousel::class)->findOneBy(['media' => $m]);
+        if ($exists) {
+            $skipped++;
+            continue;
+        }
+
+        $pos++;
+        $c = new Carrousel();
+        $c->setMedia($m);
+        $c->setTitle(pathinfo((string) $m->getFilename(), PATHINFO_FILENAME)); // optionnel
+        $c->setIsActive(true);
+        $c->setPosition($pos);
+
+        $em->persist($c);
+        $added++;
+    }
+
+    $em->flush();
+
+    // Résultat affiché
+    if ($added > 0) {
+        $this->addFlash('success', sprintf('%d image(s) ajoutée(s) au carrousel.', $added));
+    }
+    if ($skipped > 0) {
+        $this->addFlash('info', sprintf('%d image(s) déjà présentes ont été ignorées.', $skipped));
+    }
+
+    //Retour vers carrousel
+    $carrouselUrl = $url->setController(CarrouselCrudController::class)
+                        ->setAction(Crud::PAGE_INDEX)
+                        ->generateUrl();
+
+    return $this->redirect($carrouselUrl);
+}
 }
