@@ -29,11 +29,11 @@ class Entreprise
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook = null;
 
-    #[ORM\Column(length: 150, nullable: true)]
+    #[ORM\Column(length: 250, nullable: true)]
     private ?string $instagram = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $horaires = null;
+    private ?string $horairesOuverture = null;
 
     // ajout Vich pour image
     #[ORM\Column(length: 255, nullable: true)]
@@ -47,6 +47,18 @@ class Entreprise
      */
     #[ORM\OneToMany(targetEntity: Tatoueur::class, mappedBy: 'entreprise')]
     private Collection $tatoueurs;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $horairesFermeture = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $horairePlus = null;
 
     public function __construct()
     {
@@ -106,14 +118,14 @@ class Entreprise
         return $this;
     }
 
-    public function getHoraires(): ?string
+    public function getHorairesOuverture(): ?string
     {
-        return $this->horaires;
+        return $this->horairesOuverture;
     }
 
-    public function setHoraires(?string $horaires): static
+    public function setHorairesOuverture(?string $horairesOuverture): static
     {
-        $this->horaires = $horaires;
+        $this->horairesOuverture = $horairesOuverture;
 
         return $this;
     }
@@ -172,4 +184,52 @@ class Entreprise
     {
         return (string) ($this->getNom() ?? '');
     }
+
+     public function getTelephone(): ?string
+     {
+         return $this->telephone;
+     }
+
+     public function setTelephone(?string $telephone): static
+     {
+         $this->telephone = $telephone;
+
+         return $this;
+     }
+
+     public function getEmail(): ?string
+     {
+         return $this->email;
+     }
+
+     public function setEmail(string $email): static
+     {
+         $this->email = $email;
+
+         return $this;
+     }
+
+     public function getHorairesFermeture(): ?string
+     {
+         return $this->horairesFermeture;
+     }
+
+     public function setHorairesFermeture(string $horairesFermeture): static
+     {
+         $this->horairesFermeture = $horairesFermeture;
+
+         return $this;
+     }
+
+     public function getHorairePlus(): ?string
+     {
+         return $this->horairePlus;
+     }
+
+     public function setHorairePlus(?string $horairePlus): static
+     {
+         $this->horairePlus = $horairePlus;
+
+         return $this;
+     }
 }
