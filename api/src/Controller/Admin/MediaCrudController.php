@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Media;
 use App\Entity\Carrousel;
 use App\Repository\CarrouselRepository;
-
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -20,12 +20,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Test\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
 use Vich\UploaderBundle\Form\Type\VichFileType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaCrudController extends AbstractCrudController
 {
@@ -87,6 +90,31 @@ class MediaCrudController extends AbstractCrudController
             ->hideOnForm();
 
         yield DateField::new('date', 'Date')->hideOnForm();
+    }
+    
+    /*ajout des fonction pour gestion des medias (ajout) à partir d'article*/ 
+        public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            // CHAMP VICH : lié à Media::file
+            ->add('file', VichImageType::class, [
+                'label' => 'Fichier image',
+                'required' => $options['is_new_media'],
+                'allow_delete' => false,
+                'download_uri' => false,
+            ])
+            ->add('alt', TextType::class, [
+                'label' => 'Texte alternatif',
+                'required' => false,
+            ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Media::class,
+            'is_new_media' => true,
+        ]);
     }
 
     public function configureActions(Actions $actions): Actions

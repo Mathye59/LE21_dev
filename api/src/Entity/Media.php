@@ -40,7 +40,11 @@ class Media
      */
     #[ORM\OneToOne(mappedBy: 'media', targetEntity: Carrousel::class, cascade: ['remove'])]
     private ?Carrousel $carrousel = null;
+    
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $alt = null;
 
+    /* ------------------------- Constructeur ------------------------- */
     public function __construct()
     {
         // initialise la date d’ajout
@@ -126,6 +130,17 @@ class Media
     public function __toString(): string
     {
         return (string) ($this->filename ?? 'media#'.$this->id);
+    }
+
+    /* fonction pour récupérations des medias dans Articles*/
+    public function getAlt(): ?string
+    {
+         return $this->alt;
+    }
+
+    public function setAlt(?string $alt): self 
+    {
+         $this->alt = $alt; return $this; 
     }
 }
 
