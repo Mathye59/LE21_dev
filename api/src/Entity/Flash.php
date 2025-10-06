@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\StatutFlash; 
 
 #[ApiResource]
 #[Vich\Uploadable]
@@ -21,8 +22,8 @@ class Flash
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $temps = null;
 
-    #[ORM\Column(length: 20)]
-    private ?string $statut = null;
+    #[ORM\Column(type: 'string', enumType: StatutFlash::class)]
+    private ?StatutFlash $statut = StatutFlash::DISPONIBLE;
 
     #[ORM\ManyToOne(inversedBy: 'flashes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -60,16 +61,14 @@ class Flash
         return $this;
     }
 
-    public function getStatut(): ?string
-    {
-        return $this->statut;
+    public function getStatut(): ?StatutFlash 
+    { 
+        return $this->statut; 
     }
 
-    public function setStatut(string $statut): static
-    {
-        $this->statut = $statut;
-
-        return $this;
+    public function setStatut(StatutFlash $s): self 
+    { 
+        $this->statut = $s; return $this; 
     }
 
     public function getCategorie(): ?Categorie

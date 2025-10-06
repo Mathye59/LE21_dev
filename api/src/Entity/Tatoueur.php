@@ -212,4 +212,9 @@ class Tatoueur
 
         return $this;
     }
+    /** ToString pour afficher le pseudo dans les listes déroulantes, etc. */
+    public function __toString(): string 
+    { 
+        return (string) $this->getPseudo(); 
+    }
 }

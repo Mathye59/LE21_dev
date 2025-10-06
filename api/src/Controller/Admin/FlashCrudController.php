@@ -3,28 +3,27 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Flash;
+use App\Entity\Categorie;
 use App\Entity\Tatoueur;
 
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use App\Controller\Admin\CategorieCrudController;
+
+use Doctrine\ORM\EntityManagerInterface;
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
-use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
-use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
-use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
-use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
-
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 
-use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
-use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
-
+use Symfony\Component\Validator\Constraints\Length;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class FlashCrudController extends AbstractCrudController
@@ -37,68 +36,96 @@ class FlashCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInPlural('Flashes')
+            // Libellés & titres
             ->setEntityLabelInSingular('Flash')
-            ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['temps', 'statut', 'tatoueur.nom', 'tatoueur.email', 'categorie.nom']);
-    }
-
-    public function configureActions(Actions $actions): Actions
-    {
-        return $actions
-            ->setPermission(Action::DELETE, 'ROLE_ADMIN');
-            // ->setPermission(Action::NEW, 'ROLE_ADMIN'); // décommente si besoin
-    }
-
-    public function configureFilters(Filters $filters): Filters
-    {
-        return $filters
-            ->add(EntityFilter::new('categorie'))
-            ->add(ChoiceFilter::new('statut')->setChoices([
-                'Disponible'   => 'disponible',
-                'Réservé'      => 'reserve',
-                'Indisponible' => 'indisponible',
-            ]))
-            ->add(EntityFilter::new('tatoueur'));
+            ->setEntityLabelInPlural('Flashes')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Flashes')
+            ->setPageTitle(Crud::PAGE_NEW, 'Nouveau flash')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le flash')
+            // Tri par défaut : les plus récents d’abord si updatedAt existe
+            ->setDefaultSort(['categorie.nom' => 'ASC', 'tatoueur.nom' => 'ASC', 'statut' => 'ASC'])
+            ->setPaginatorPageSize(15);
     }
 
     public function configureFields(string $pageName): iterable
     {
-        yield TextField::new('temps', 'Durée')->hideOnIndex();
+        $isNew = $pageName === Crud::PAGE_NEW;
 
-        yield ChoiceField::new('statut', 'Statut')->setChoices([
-            'Disponible'   => 'disponible',
-            'Réservé'      => 'reserve',
-            'Indisponible' => 'indisponible',
-        ]);
+        // --- Champs texte simples ------------------------------------------------
 
-        yield AssociationField::new('categorie')->setLabel('Catégorie')->autocomplete();
-        yield AssociationField::new('tatoueur')->setLabel('Tatoueur')->autocomplete();
+        // Optionnel (nullable true dans l’entité)
+        yield TextField::new('temps', 'Temps estimé')
+            ->setHelp('Exemple: "2h", "3h30"…')
+            ->setMaxLength(50);
 
-        yield Field::new('imageFile')->setFormType(VichImageType::class)->onlyOnForms()->setLabel('Image');
-        yield ImageField::new('imageName')->setBasePath('uploads/flashes')->onlyOnIndex()->setLabel('Aperçu');
+        // Statut libre (tu pourras passer en ChoiceField si tu normalises les valeurs)
+        yield ChoiceField::new('statut', 'Statut')
+            ->setChoices([
+                'Disponible'   => 'disponible',
+                'Réservé'      => 'reserve',
+                'Indisponible' => 'indisponible',
+            ])
+            ->renderAsNativeWidget();
+
+        // --- Associations --------------------------------------------------------
+
+        //  Catégories en multi-sélection + création 
+    yield AssociationField::new('categories', 'Catégories')
+        ->setCrudController(CategorieCrudController::class)
+        ->setFormTypeOptions([
+            'by_reference' => false,  
+            'multiple' => true,
+        ])
+        ->autocomplete()              
+        ->setRequired(true);
+
+        // Tatoueur : sélection uniquement (pas d’ajout), donc pas de setCrudController().
+        yield AssociationField::new('tatoueur', 'Tatoueur')
+            ->setFormTypeOption('choice_label', 'nom') 
+            ->autocomplete()
+            ->setRequired(true);
+
+        // --- Image (Vich) -------------------------------------------------------
+
+        // Champ d’upload Vich : lié à Flash::imageFile (UploadableField)
+        yield Field::new('imageFile', 'Image')
+            ->setFormType(VichImageType::class)
+            ->setFormTypeOptions([
+                'required' => $isNew,          // requis à la création, optionnel en édition
+                'allow_delete' => false,
+            ])
+            ->onlyOnForms();
+
+        // Aperçu image (index/détail) basé sur le nom de fichier persistant (imageName)
+        yield ImageField::new('imageName', 'Aperçu')
+            ->setBasePath('/uploads/flashes') 
+            ->hideOnForm();
+
+        // (Optionnel) Dernière modif (si tu l’affiches dans la liste)
+        yield DateTimeField::new('updatedAt', 'MAJ')
+            ->onlyOnIndex();
     }
 
-    /**
-     * Restreint la liste aux flashes du tatoueur connecté (sauf admin).
-     */
-    // public function createIndexQueryBuilder(
-    //     SearchDto $searchDto,
-    //     EntityRepository $repo,
-    //     FieldCollection $fields,
-    //     FilterCollection $filters
-    // ) {
-    //     $qb = $repo->createQueryBuilder($searchDto, $fields, $filters);
+    public function configureActions(Actions $actions): Actions
+    {
+        // Juste un peu de cosmétique sur les libellés/icônes
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::NEW, fn(Action $a) =>
+                $a->setLabel('Nouveau flash')->setIcon('fa fa-plus')
+            )
+            ->update(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER, fn(Action $a) =>
+                $a->setLabel('Enregistrer et ajouter un autre')->setIcon('fa fa-plus-circle')
+            )
+            ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn(Action $a) =>
+                $a->setLabel('Enregistrer et revenir')->setIcon('fa fa-check')
+            )
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, fn(Action $a) =>
+                $a->setLabel('Enregistrer et continuer')->setIcon('fa fa-save')
+            )
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn(Action $a) =>
+                $a->setLabel('Enregistrer et revenir')->setIcon('fa fa-check')
+            );
+    }
 
-    //     if ($this->isGranted('ROLE_TATOUEUR') && !$this->isGranted('ROLE_ADMIN')) {
-    //         $user = $this->getUser();
-    //         if ($user && method_exists($user, 'getTatoueur') && $user->getTatoueur() instanceof Tatoueur) {
-    //             $qb->andWhere('entity.tatoueur = :t')->setParameter('t', $user->getTatoueur());
-    //         } else {
-    //             $qb->andWhere('1 = 0'); // pas de tatoueur lié -> rien
-    //         }
-    //     }
 
-    //     return $qb;
-    // }
 }
