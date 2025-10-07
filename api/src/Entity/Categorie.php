@@ -21,10 +21,12 @@ class Categorie
     private ?string $nom = null;
 
     /**
+     * Relation inverse du ManyToMany : une catégorie peut être liée à plusieurs flashes
      * @var Collection<int, Flash>
      */
-    #[ORM\OneToMany(targetEntity: Flash::class, mappedBy: 'categorie')]
+    #[ORM\ManyToMany(targetEntity: Flash::class, mappedBy: 'categories')]
     private Collection $flashes;
+
 
     public function __construct()
     {
@@ -48,34 +50,10 @@ class Categorie
         return $this;
     }
 
-    /**
-     * @return Collection<int, Flash>
-     */
-    public function getFlashes(): Collection
-    {
-        return $this->flashes;
-    }
-
-    public function addFlash(Flash $flash): static
-    {
-        if (!$this->flashes->contains($flash)) {
-            $this->flashes->add($flash);
-            $flash->setCategorie($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFlash(Flash $flash): static
-    {
-        if ($this->flashes->removeElement($flash)) {
-            // set the owning side to null (unless already changed)
-            if ($flash->getCategorie() === $this) {
-                $flash->setCategorie(null);
-            }
-        }
-
-        return $this;
+      /** @return Collection<int, Flash> */
+    public function getFlashes(): Collection 
+    { 
+        return $this->flashes; 
     }
 
     public function __toString(): string

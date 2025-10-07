@@ -71,12 +71,13 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Commentaires', 'fa fa-comments', Commentaire::class);   //gestion commentaires des articles (validation)
 
         // 5) ADMIN
-        yield MenuItem::section('Administration');//->setPermission('ROLE_ADMIN')
-        yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class);//->setPermission('ROLE_ADMIN')
-        // if (class_exists(User::class)) {
-        //     yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-user-shield', User::class)->setPermission('ROLE_ADMIN');
+        // if ( $this->isGranted('ROLE_ADMIN') ) 
+        // {   //seulement si ROLE_ADMIN
+             yield MenuItem::section('Administration');//->setPermission('ROLE_ADMIN')
+            yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class);//->setPermission('ROLE_ADMIN')
+            yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class);//->setPermission('ROLE_ADMIN')
         // }
-        yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class);//->setPermission('ROLE_ADMIN')
+       
     }
     public function configureAssets(): Assets
     {

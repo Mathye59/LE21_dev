@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
+use App\Entity\Entreprise;
+use App\Entity\ArticleBlog;
+use App\Entity\Flash;
+use App\Entity\FormContact;
 use App\Repository\TatoueurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -50,6 +55,10 @@ class Tatoueur
 
     #[ORM\Column(length: 25, nullable: true)]
     private ?string $pseudo = null;
+
+    #[ORM\OneToOne(inversedBy: 'tatoueur', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)] // ← true si tu acceptes de créer la fiche avant le compte
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -217,4 +226,16 @@ class Tatoueur
     { 
         return (string) $this->getPseudo(); 
     }
+
+    /*ajout gestion roles user*/
+    public function getUser(): ?User 
+    { 
+        return $this->user;
+    }
+
+    public function setUser(?User $u): self
+     { 
+        $this->user = $u;
+        return $this;
+     }
 }

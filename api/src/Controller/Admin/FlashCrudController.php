@@ -7,7 +7,7 @@ use App\Entity\Categorie;
 use App\Entity\Tatoueur;
 
 use App\Controller\Admin\CategorieCrudController;
-
+use App\Enum\StatutFlash;
 use Doctrine\ORM\EntityManagerInterface;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -22,9 +22,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
-
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Validator\Constraints\Length;
 use Vich\UploaderBundle\Form\Type\VichImageType;
+
 
 class FlashCrudController extends AbstractCrudController
 {
@@ -59,13 +60,24 @@ class FlashCrudController extends AbstractCrudController
             ->setMaxLength(50);
 
         // Statut libre (tu pourras passer en ChoiceField si tu normalises les valeurs)
-        yield ChoiceField::new('statut', 'Statut')
-            ->setChoices([
-                'Disponible'   => 'disponible',
-                'Réservé'      => 'reserve',
-                'Indisponible' => 'indisponible',
-            ])
-            ->renderAsNativeWidget();
+       yield Field::new('statut', 'Statut')
+        ->setFormType(EnumType::class)
+        ->setFormTypeOptions([
+            'class' => StatutFlash::class,
+            // label lisible dans le select
+            'choice_label' => fn (StatutFlash $e) => match ($e) {
+                StatutFlash::DISPONIBLE   => 'Disponible',
+                StatutFlash::RESERVE      => 'Réservé',
+                StatutFlash::INDISPONIBLE => 'Indisponible',
+            },
+        ])
+    // rendu lisible en INDEX/DETAIL
+        ->formatValue(fn ($value) => match ($value) {
+            StatutFlash::DISPONIBLE   => 'Disponible',
+            StatutFlash::RESERVE      => 'Réservé',
+            StatutFlash::INDISPONIBLE => 'Indisponible',
+            default => '',
+        });
 
         // --- Associations --------------------------------------------------------
 
@@ -81,7 +93,6 @@ class FlashCrudController extends AbstractCrudController
 
         // Tatoueur : sélection uniquement (pas d’ajout), donc pas de setCrudController().
         yield AssociationField::new('tatoueur', 'Tatoueur')
-            ->setFormTypeOption('choice_label', 'nom') 
             ->autocomplete()
             ->setRequired(true);
 

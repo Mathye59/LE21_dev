@@ -27,6 +27,7 @@ services:
         APP_DEBUG: 1
         APP_SECRET: dev
         DATABASE_URL: "mysql://le_21:le_21@db:3306/le_21?serverVersion=8.0"
+        MAILER_DSN: "smtp://user:pass@smtp.your-host:587"
       depends_on:
         db:
           condition: service_healthy

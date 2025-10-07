@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
+
 use App\Repository\FlashRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use ApiPlatform\Metadata\ApiResource;
 use App\Enum\StatutFlash; 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\Categorie;
 
 #[ApiResource]
 #[Vich\Uploadable]
@@ -25,9 +29,9 @@ class Flash
     #[ORM\Column(type: 'string', enumType: StatutFlash::class)]
     private ?StatutFlash $statut = StatutFlash::DISPONIBLE;
 
-    #[ORM\ManyToOne(inversedBy: 'flashes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Categorie $categorie = null;
+    #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'flashes')]
+    #[ORM\JoinTable(name: 'flash_categorie')]
+    private Collection $categories;
 
     #[ORM\ManyToOne(inversedBy: 'flashes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -71,15 +75,20 @@ class Flash
         $this->statut = $s; return $this; 
     }
 
-    public function getCategorie(): ?Categorie
+        /** @return Collection<int, Categorie> */
+    public function getCategories(): Collection { return $this->categories; }
+
+    public function addCategory(Categorie $c): self
     {
-        return $this->categorie;
+        if (!$this->categories->contains($c)) {
+            $this->categories->add($c);
+        }
+        return $this;
     }
 
-    public function setCategorie(?Categorie $categorie): static
+    public function removeCategory(Categorie $c): self
     {
-        $this->categorie = $categorie;
-
+        $this->categories->removeElement($c);
         return $this;
     }
 
