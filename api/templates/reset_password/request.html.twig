@@ -1,22 +1,23 @@
-{% extends 'base.html.twig' %}
+{% extends 'auth/_layout.html.twig' %}
+{% block title %}Réinitialiser le mot de passe — Le 21{% endblock %}
 
-{% block title %}Reset your password{% endblock %}
-
-{% block body %}
-    {% for flash_error in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
-    <h1>Reset your password</h1>
+{% block auth_content %}
+  <div class="form-wrap">
+    <p class="help" style="margin-bottom:14px">
+      Entrez votre e-mail. Nous vous enverrons un lien pour définir un nouveau mot de passe.
+    </p>
 
     {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
-            <small>
-                Enter your email address, and we will send you a
-                link to reset your password.
-            </small>
-        </div>
+      <div class="form-row">
+        {{ form_label(requestForm.email, 'Adresse e-mail', {'label_attr': {'class':'label'}}) }}
+        {{ form_widget(requestForm.email, {'attr': {'class':'input'}}) }}
+        {{ form_errors(requestForm.email) }}
+      </div>
 
-        <button class="btn btn-primary">Send password reset email</button>
+      <div class="form-row" style="display:flex; gap:10px; justify-content:flex-end">
+        <a class="btn btn-ghost" href="{{ path('app_login') }}">Retour</a>
+        <button class="btn btn-primary">Envoyer le lien</button>
+      </div>
     {{ form_end(requestForm) }}
+  </div>
 {% endblock %}

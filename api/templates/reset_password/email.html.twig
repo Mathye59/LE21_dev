@@ -1,9 +1,23 @@
-<h1>Hi!</h1>
-
-<p>To reset your password, please visit the following link</p>
-
-<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
-
-<p>This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
-
-<p>Cheers!</p>
+{# Email HTML simple, compatible #}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#091F16; padding:24px 0; font-family:'Playfair Display', Georgia, serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#0f3426; color:#F7F0BA; border:1px solid #594; border-radius:12px; padding:24px">
+        <tr><td align="center" style="font-size:36px; font-family:Tangerine, cursive; padding-bottom:8px;">Le 21</td></tr>
+        <tr><td style="font-size:16px; line-height:1.5; padding-bottom:18px">
+          Vous avez demandé à réinitialiser votre mot de passe.
+          Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
+        </td></tr>
+        <tr><td align="center" style="padding:10px 0 24px">
+          <a href="{{ url|raw }}"
+             style="background:#F7F0BA; color:#092018; text-decoration:none; padding:12px 20px; border-radius:999px; font-weight:700; display:inline-block">
+            Définir mon mot de passe
+          </a>
+        </td></tr>
+        <tr><td style="font-size:13px; color:#e8dfab">
+          Ce lien expire dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+</table>

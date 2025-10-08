@@ -1,12 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'auth/_layout.html.twig' %}
+{% block title %}Nouveau mot de passe — Le 21{% endblock %}
 
-{% block title %}Reset your password{% endblock %}
-
-{% block body %}
-    <h1>Reset your password</h1>
-
+{% block auth_content %}
+  <div class="form-wrap">
     {{ form_start(resetForm) }}
-        {{ form_row(resetForm.plainPassword) }}
-        <button class="btn btn-primary">Reset password</button>
+      <div class="form-row">
+        {{ form_label(resetForm.plainPassword, 'Nouveau mot de passe', {'label_attr': {'class':'label'}}) }}
+        {{ form_widget(resetForm.plainPassword, {'attr': {'class':'input'}}) }}
+        {{ form_errors(resetForm.plainPassword) }}
+      </div>
+
+      <div class="form-row" style="display:flex; gap:10px; justify-content:flex-end">
+        <button class="btn btn-primary">Valider</button>
+      </div>
     {{ form_end(resetForm) }}
+  </div>
 {% endblock %}

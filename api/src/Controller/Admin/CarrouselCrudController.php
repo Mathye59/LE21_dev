@@ -9,7 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -23,12 +23,19 @@ class CarrouselCrudController extends AbstractCrudController
         return Carrousel::class;
     }
 
+     public function createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters): \Doctrine\ORM\QueryBuilder
+    {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        return $qb
+            ->addSelect('m')                 // on sélectionne aussi le média
+            ->leftJoin('entity.media', 'm'); // et on le joint dès la requête principale
+    }
+    
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
             ->setEntityLabelInPlural('Carrousel')
             ->setEntityLabelInSingular('Image du carrousel')
-            ->setDefaultSort(['media.filename' => 'ASC']) // tri par nom
             ->setPageTitle(Crud::PAGE_INDEX, 'Carrousel')
             ->setDefaultSort(['position' => 'ASC'])
             ->setPaginatorPageSize(15)  ;        // <= 15 par page
@@ -38,15 +45,14 @@ class CarrouselCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         // Miniature (INDEX uniquement)
-        yield ImageField::new('mediaFilename', 'Aperçu')
+        yield ImageField::new('media.filename', 'Aperçu')
             ->setBasePath('/uploads/media')
             ->onlyOnIndex()
             ->setSortable(false);
 
         // Nom de fichier (INDEX uniquement)
-        yield TextField::new('mediaFilename', 'Média')
-            ->onlyOnIndex()
-            ->setSortable(true);
+        yield TextField::new('media.filename', 'Média')
+            ->onlyOnIndex();
 
         // (si tu veux éditer le titre)
         yield TextField::new('title', 'Titre')->hideOnIndex();
@@ -80,4 +86,5 @@ class CarrouselCrudController extends AbstractCrudController
 
         return $this->redirect($this->getContext()->getReferrer());
     }
+   
 }

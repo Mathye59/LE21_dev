@@ -44,7 +44,7 @@ class FlashCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_NEW, 'Nouveau flash')
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le flash')
             // Tri par défaut : les plus récents d’abord si updatedAt existe
-            ->setDefaultSort(['categorie.nom' => 'ASC', 'tatoueur.nom' => 'ASC', 'statut' => 'ASC'])
+            ->setDefaultSort([ 'tatoueur.nom' => 'ASC', 'statut' => 'ASC'])
             ->setPaginatorPageSize(15);
     }
 
@@ -60,24 +60,46 @@ class FlashCrudController extends AbstractCrudController
             ->setMaxLength(50);
 
         // Statut libre (tu pourras passer en ChoiceField si tu normalises les valeurs)
-       yield Field::new('statut', 'Statut')
-        ->setFormType(EnumType::class)
-        ->setFormTypeOptions([
-            'class' => StatutFlash::class,
-            // label lisible dans le select
-            'choice_label' => fn (StatutFlash $e) => match ($e) {
-                StatutFlash::DISPONIBLE   => 'Disponible',
-                StatutFlash::RESERVE      => 'Réservé',
-                StatutFlash::INDISPONIBLE => 'Indisponible',
-            },
-        ])
-    // rendu lisible en INDEX/DETAIL
-        ->formatValue(fn ($value) => match ($value) {
-            StatutFlash::DISPONIBLE   => 'Disponible',
-            StatutFlash::RESERVE      => 'Réservé',
-            StatutFlash::INDISPONIBLE => 'Indisponible',
-            default => '',
-        });
+       yield ChoiceField::new('statut', 'Statut')
+    // mapping libellé -> valeur (enum)
+            ->setChoices([
+                'Disponible'   => StatutFlash::DISPONIBLE,
+                'Réservé'      => StatutFlash::RESERVE,
+                'Indisponible' => StatutFlash::INDISPONIBLE,
+            ])
+            // formulaire : on garde EnumType pour le select
+            ->setFormType(EnumType::class)
+            ->setFormTypeOptions([
+                'class' => StatutFlash::class,
+            ])
+            // rendu visuel en index/détail
+            ->renderAsBadges([
+                // clé = string affichée, valeur = style
+                'Disponible'   => 'success',
+                'Réservé'      => 'warning',
+                'Indisponible' => 'danger',
+            ])
+            // sécurité : s'assure que l’index reçoit bien une string
+            ->formatValue(static function ($value): string {
+                // $value peut être une enum, une string (selon le contexte) ou null
+                if ($value instanceof StatutFlash) {
+                    return match ($value) {
+                        StatutFlash::DISPONIBLE   => 'Disponible',
+                        StatutFlash::RESERVE      => 'Réservé',
+                        StatutFlash::INDISPONIBLE => 'Indisponible',
+                    };
+                }
+                if (\is_string($value)) {
+                    // au cas où Doctrine renvoie déjà la valeur sauvegardée
+                    return match ($value) {
+                        'DISPONIBLE'   => 'Disponible',
+                        'RESERVE'      => 'Réservé',
+                        'INDISPONIBLE' => 'Indisponible',
+                        default        => $value,
+                    };
+                }
+                return '';
+            });
 
         // --- Associations --------------------------------------------------------
 
@@ -89,7 +111,8 @@ class FlashCrudController extends AbstractCrudController
             'multiple' => true,
         ])
         ->autocomplete()              
-        ->setRequired(true);
+        ->setRequired(true)
+        ->onlyOnForms();
 
         // Tatoueur : sélection uniquement (pas d’ajout), donc pas de setCrudController().
         yield AssociationField::new('tatoueur', 'Tatoueur')

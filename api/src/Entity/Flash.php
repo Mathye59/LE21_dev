@@ -48,6 +48,11 @@ class Flash
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    public function __construct()
+    {
+        $this->categories = new ArrayCollection();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

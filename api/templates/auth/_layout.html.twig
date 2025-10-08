@@ -1,0 +1,41 @@
+{# Layout minimal pour les pages login/reset #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}Espace sécurisé — Le Twenty-One Tattoo & Piercing{% endblock %}</title>
+
+  {# Fonts #}
+  <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&family=Playfair+Display:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  {# CSS Auth #}
+  <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="auth-body">
+
+  {# Liseré de feuilles décoratif sur la droite #}
+  <div class="auth-leaves"></div>
+
+  <main class="auth-wrapper">
+    <section class="auth-card card-cadre">
+      <img class="coin coin-glh" src="{{ asset('images/coin-gauche-h.png') }}" alt="coin cadre">
+      <img class="coin coin-grh" src="{{ asset('images/coin-droit-h.png') }}" alt="coin cadre">
+      <img class="coin coin-glb" src="{{ asset('images/coin-gauche-b.png') }}" alt="coin cadre">
+      <img class="coin coin-grb" src="{{ asset('images/coin-droit-b.png') }}" alt="coin cadre">
+
+      <header class="auth-header">
+        <h1 class="brand-title">Le Twenty-One Tattoo & Piercing</h1>
+        <p class="brand-sub">Espace sécurisé</p>
+        <img class="separator" src="{{ asset('images/separateur.png') }}" alt="separateur">
+      </header>
+
+      {% block auth_content %}{% endblock %}
+    </section>
+  </main>
+
+  {% block extra_body %}{% endblock %}
+</body>
+</html>
