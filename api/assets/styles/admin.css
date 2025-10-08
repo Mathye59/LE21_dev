@@ -56,6 +56,9 @@ body .sidebar .menu .menu-item.active > a {
 }
 body .sidebar .menu .menu-item .fa,
 body .sidebar .menu .menu-item svg { color: var(--le21-gold) !important; }
+#main-menu .menu .menu-header {
+  color: var(--le21-text-2) !important;
+}
 
 /* panneaux / cartes / tableau */
 body .content-wrapper,
@@ -131,6 +134,8 @@ body .table tbody tr:hover {
 }
 .table>:not(caption)>*>* {
     color: var(--le21-text);}
+.datagrid thead .sorted.asc:after {
+    border-bottom-color: var(--le21-moss);}
 
 /* miniatures */
 body .ea-lightbox-thumbnail img,
@@ -140,6 +145,8 @@ body .table .image img {
   border: 1px solid var(--le21-brown) !important;
   box-shadow: 0 6px 16px rgba(0,0,0,.35) !important;
 }
+
+
 
 /* formulaires */
 body .form-control, body .form-select {
@@ -175,6 +182,11 @@ body .pagination .page-item.active .page-link {
   color: #1b1b1b !important;
   border-color: color-mix(in oklab, var(--le21-brown), transparent 40%) !important;
 }
+.list-pagination-counter{
+    color: var(--le21-text) !important  ;
+}
+
+
 
 /* alerts / badges */
 body .alert {
@@ -199,6 +211,32 @@ body .form-control, body .form-select{
   border: 1px solid  var(--le21-brown) !important;
   border-radius: 10px !important;
 }
+.trix-content *{
+  color: var(--le21-text-3) !important;
+}
+.form-group label{
+  color: var(--le21-text) !important;
+}
+.field-association .action-new,
+.ea-autocomplete .action-new {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.form-group label, .form-group legend.col-form-label{
+  color: var(--le21-text) !important;
+}
+.ts-wrapper.form-select:not(.disabled) .ts-control {
+  background:  var(--le21-bg) !important;
+  color: var(--le21-text) !important;
+  border: 1px solid  var(--le21-brown) !important;
+  border-radius: 10px !important;}
+
+/* Avoid clipping the button */
+.field-association, .ea-autocomplete {
+  overflow: visible !important;
+}
+
 /* login (si utilisé) */
 body .login-wrapper { background: var(--le21-bg-grad) !important; }
 body .login .content {
@@ -207,3 +245,9 @@ body .login .content {
   border-radius: 16px !important;
   color: var(--le21-text) !important;
 }
+/* Responsive - mobile */
+@media (max-width: 767px) {
+    table.datagrid:not(.datagrid-empty) td:before {
+              color: var(--le21-text) !important;
+    }
+  }

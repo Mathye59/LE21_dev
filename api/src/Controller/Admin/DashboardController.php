@@ -73,8 +73,8 @@ class DashboardController extends AbstractDashboardController
         // 5) ADMIN
        
         yield MenuItem::section('Administration')->setPermission('ROLE_ADMIN');
-        yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class)->setPermission('ROLE_ADMIN');
-        yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class)->setPermission('ROLE_ADMIN');
+        yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class)->setPermission('ROLE_ADMIN'); //gestion infos entreprise
+        yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class)->setPermission('ROLE_ADMIN'); //gestion tatoueurs 
         
        
     }
