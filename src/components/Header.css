@@ -1,0 +1,97 @@
+/* ---- barre + fond (reprend l'exemple) ---- */
+
+
+
+.luxury-header {
+  width: 100%;
+  max-height: 200px;
+  background:
+    linear-gradient(135deg, rgba(45,45,45,0.95) 0%, rgba(30,30,30,0.98) 100%),
+    radial-gradient(ellipse at top, rgba(212,175,55,0.05) 0%, transparent 60%);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(212,175,55,0.3);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1000;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+/* ---- logo au centre ---- */
+.logo-center { flex: 0 0 auto; position: relative; z-index: 2; }
+.main-logo { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: .3s ease; }
+.main-logo:hover { filter: drop-shadow(0 24px 32px rgba(212,176,59,.88)); transform: scale(1.02); }
+.logo { width: 200px; height: auto; }
+
+/* placeholder si pas de logo */
+.logo-placeholder {
+  width: 200px; height: 120px; display: grid; place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f7f0ba, #be9e66);
+  color: #574D29; font-weight: 700; letter-spacing: .5px;
+  box-shadow: 0 16px 40px rgba(212,176,59,.45);
+}
+
+/* ---- navs ---- */
+.nav-left, .nav-right { flex: 0 1 auto; max-width: 30%; display: flex; }
+.nav-left { justify-content: flex-start; }
+.nav-right { justify-content: flex-end; }
+.nav-left ul, .nav-right ul {
+  display: flex; list-style: none; margin: 0; padding: 0; gap: 2rem; align-items: center;
+}
+.nav-left li, .nav-right li { margin: 0; padding: 0; }
+.nav-left a, .nav-right a {
+  display: inline-block;
+  color: #f7f0ba;
+  text-decoration: none;
+  font: 300 1rem/1.2 "Playfair Display", serif;
+  padding: 12px 20px;
+  border-radius: 30px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all .25s ease;
+}
+.nav-left a:hover, .nav-right a:hover { color: #be9e66; background: rgba(212,175,55,.08); transform: translateY(-2px); }
+
+/* ---- burger (image) ---- */
+.mobile-menu-toggle {
+  display: none;  /* visible en mobile via media query */
+  background: none; border: none; cursor: pointer; padding: 8px;
+  position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+}
+.burger-icon { width: 95%; height: 95%; display: block; }
+
+/* ---- overlay mobile ---- */
+.mobile-menu {
+  position: absolute; top: 100%; left: 0; width: 100%;
+  background: linear-gradient(135deg, rgba(45,45,45,.98) 0%, rgba(30,30,30,.99) 100%);
+  backdrop-filter: blur(20px);
+  transform: translateY(-100%);
+  opacity: 0; visibility: hidden;
+  transition: all .35s ease;
+  border-top: 1px solid rgba(212,175,55,.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+.mobile-menu.active { transform: translateY(0); opacity: 1; visibility: visible; }
+.mobile-menu ul { list-style: none; margin: 0; padding: 30px 0; text-align: center; }
+.mobile-menu li { margin: 0; }
+.mobile-menu a {
+  display: block; color: rgba(232,226,212,.9); text-decoration: none;
+  padding: 18px 40px; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase;
+
+}
+.mobile-menu a:hover { color: #d4af37; background: rgba(212,175,55,.05); }
+
+/* ---- responsive ---- */
+@media (max-width: 768px) {
+  .nav-left, .nav-right { display: none; }
+  .mobile-menu-toggle { display: block; }
+}

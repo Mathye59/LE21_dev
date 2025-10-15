@@ -1,0 +1,173 @@
+.blog-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+.blog-loading {
+  text-align: center;
+  color: #f7f0ba;
+  padding: 60px 20px;
+  font-size: 1.1rem;
+}
+
+.blog-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: #f7f0ba;
+  text-align: center;
+  margin-bottom: 60px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Liste des articles */
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Carte article */
+.article-card {
+  position: relative;
+  display: flex;
+  gap: 30px;
+  padding: 30px;
+  background: rgba(26, 26, 26, 0.4);
+  border: 1px solid rgba(247, 240, 186, 0.2);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.article-card:hover {
+  border-color: rgba(247, 240, 186, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Image */
+.article-image {
+  flex-shrink: 0;
+  width: 150px;
+  height: 150px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid rgba(247, 240, 186, 0.3);
+}
+
+.article-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.article-card:hover .article-image img {
+  transform: scale(1.05);
+}
+
+/* Contenu */
+.article-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.article-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: #f7f0ba;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.article-excerpt {
+  color: rgba(247, 240, 186, 0.8);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(247, 240, 186, 0.15);
+  font-size: 0.85rem;
+}
+
+.article-author {
+  color: #d4af37;
+  font-style: italic;
+}
+
+.article-date {
+  color: rgba(247, 240, 186, 0.6);
+}
+
+/* Séparateur coin */
+.separator-corner {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 60px;
+  height: 60px;
+  z-index: 2;
+  opacity: 0.8;
+}
+
+.separator-corner svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Séparateur horizontal */
+.separator-horizontal {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+  opacity: 0.6;
+}
+
+.separator-horizontal svg {
+  width: 200px;
+  height: 60px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .article-card {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .article-image {
+    width: 100%;
+    height: 200px;
+  }
+
+  .separator-corner {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-container {
+    padding: 30px 15px;
+  }
+
+  .article-card {
+    padding: 20px;
+  }
+
+  .article-card-title {
+    font-size: 1.3rem;
+  }
+}

@@ -69,14 +69,10 @@ class EntrepriseCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Entreprise')
             ->setEntityLabelInSingular('Entreprise')
 
-            // Titres des pages (INDEX/LISTE, NEW, EDIT). Personnalisables selon ta charte.
+            // Titres des pages (INDEX/LISTE, EDIT). Personnalisables selon ta charte.
+            //pas de new car une seule entreprise
             ->setPageTitle(Crud::PAGE_INDEX, 'Entreprise')
-            ->setPageTitle(Crud::PAGE_NEW, 'Créer l’entreprise')
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier l’entreprise')
-
-            // Pagination : 15 éléments/page (suffisant si 1 enregistrement ; neutre sinon)
-            // [UX] Si tu n'auras qu’un seul enregistrement d’Entreprise, tu peux même monter à 50/100
-            ->setPaginatorPageSize(15)
 
             // Tri par défaut sur l'ID descendant (le plus récent en premier).
             // [DX] Pratique si tu crées plusieurs "Entreprise" pendant les tests.
@@ -94,10 +90,8 @@ class EntrepriseCrudController extends AbstractCrudController
         // [DX] Ne pas "add" une action déjà existante (sinon "already exists").
         // On utilise ->update() pour modifier l’existant proprement.
         return $actions
-            // Page NEW : bouton "Save and Return" devient "Créer"
-            ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $a) =>
-                $a->setLabel('Créer'))
-
+            // Page INDEX : on masque les actions NEW et DELETE (une seule entreprise gérée)
+            ->disable(Action::NEW, Action::DELETE, Action::SAVE_AND_ADD_ANOTHER)
             // Page EDIT : on renomme "Save and Continue" pour clarifier le comportement
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, fn (Action $a) =>
                 $a->setLabel('Enregistrer et continuer'))
@@ -106,6 +100,12 @@ class EntrepriseCrudController extends AbstractCrudController
             ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $a) =>
                 $a->setLabel('Enregistrer et revenir'));
     }
+     /**
+     * Garde de sécurité : si une Entreprise existe déjà,
+     * on empêche toute création via une URL /new (accès direct).
+     */
+   
+
 
     /**
      * Déclaration des champs affichés en fonction des pages (index/new/edit/detail).
@@ -185,7 +185,7 @@ class EntrepriseCrudController extends AbstractCrudController
         //         Exemple : public/uploads/company_logos (donc base path "/uploads/company_logos").
         // [UX] hideOnForm : affiché en INDEX et DETAIL, masqué en formulaire.
         yield ImageField::new('logoName', 'Aperçu logo')
-            ->setBasePath('/uploads/company_logos')
+            ->setBasePath('/uploads/logos')
             ->hideOnForm();
     }
 }

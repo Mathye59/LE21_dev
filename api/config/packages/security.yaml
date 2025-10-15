@@ -1,59 +1,57 @@
 security:
     role_hierarchy:
         ROLE_ADMIN: [ROLE_USER]
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
+    
     firewalls:
+        # Firewall pour les assets (CSS, JS, images)
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        
+        # Firewall STATELESS pour l'API publique (pas de sessions, pas d'auth)
+        api_public:
+            pattern: ^/api
+            stateless: true
+            security: false  # Pas d'authentification requise pour l'API publique
+            lazy: true
+        # Firewall STATEFUL pour l'admin et le site (avec sessions et login)
         main:
             lazy: true
             provider: app_user_provider
             entry_point: App\Security\LoginFormAuthenticator
+            
             logout:
                 path: app_logout
+            
             custom_authenticator: App\Security\LoginFormAuthenticator
-
+            
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
-                # by default, the feature is enabled by checking a checkbox in the
-                # login form, uncomment the following line to always enable it.
-                #always_remember_me: true
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+    # Contrôle d'accès
     access_control:
+        - { path: ^/api, roles: PUBLIC_ACCESS }          # API publique accessible à tous
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_USER}
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/, roles: ROLE_USER }
-
+        - { path: ^/admin, roles: ROLE_USER }            # Admin nécessite connexion
+        - { path: ^/, roles: ROLE_USER }                 # Reste du site nécessite connexion
+         
 when@test:
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

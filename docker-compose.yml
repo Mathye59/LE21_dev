@@ -16,6 +16,7 @@ services:
       retries: 20
     volumes:
       - dbdata:/var/lib/mysql
+      - ./backup:/docker-entrypoint-initdb.d
 
   api:
       build:
@@ -35,19 +36,40 @@ services:
         - "8080:80"   
       volumes:
         - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
+      
 
 
   front:
+    image: node:20-alpine
     container_name: le21_front
-    build:
-      context: .
-      dockerfile: Dockerfile.front 
-      args:
-        VITE_API_URL: "http://127.0.0.1:8080"
+    working_dir: /app
+    command: sh -lc "npm ci && npm run dev -- --host --port 5173"
+    environment:
+      VITE_API_URL: "http://127.0.0.1:8080"
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      VITE_HMRC_TIMEOUT: "localhost"           # ← ajoute
     ports:
-      - "3000:80"     
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/api                           # ← exclut l'API du watch
     depends_on:
       - api
+
+  # PROD — build puis Nginx sur 3000
+  # front:
+  #   build:
+  #     context: .          # idem : ./ ou ./front selon où est le front
+  #     dockerfile: Dockerfile.front
+  #     args:
+  #       VITE_API_URL: "http://127.0.0.1:8080"
+  #   container_name: le21_front
+  #   ports: ["3000:80"]
+  #   depends_on:
+  #     - api
+
 
 volumes:
   dbdata:

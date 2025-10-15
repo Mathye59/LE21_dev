@@ -1,0 +1,344 @@
+/* Footer principal - Fond dégradé sombre */
+.main-footer {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+  color: #e8e2d4;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+  display: block;
+}
+
+/* Ligne décorative dorée en haut du footer */
+.main-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 55, 0.5),
+    transparent
+  );
+}
+
+/* Contenu principal du footer - Grid responsive */
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 40px 40px;
+  display: flex;
+  flex-direction: row; 
+  align-content: space-evenly;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.size-footer {
+  width: fit-content;
+  min-width: 25%;
+}
+
+/* Section individuelle du footer */
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Logo du footer */
+.logo-footer {
+  width: 100%;
+  min-width: 100px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Placeholder du logo si absent */
+.logo-placeholder-footer {
+  width: 150px;
+  height: 100px;
+  background: linear-gradient(135deg, #d4af37, #be9e66);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 0 auto;
+}
+
+/* Conteneur du logo - Cliquable sur mobile */
+.footer-logo-container {
+  cursor: default;
+  transition: transform 0.3s ease;
+  max-width: 225px;
+}
+
+/* === OVERLAY HORAIRES AU-DESSUS DU FOOTER === */
+.horaires-mobile-overlay {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  width: 90%;
+  max-width: 500px;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid #d4af37;
+  border-radius: 15px;
+  padding: 30px 20px;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.5);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(-100% - 20px));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%);
+  }
+}
+
+.logo-overlay {
+  width: 120px;
+  height: auto;
+  margin: 0 auto 15px;
+  display: block;
+}
+
+.horaires-overlay-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: #d4af37;
+  margin-bottom: 20px;
+  letter-spacing: 3px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.horaires-overlay-info {
+  color: rgba(232, 226, 212, 0.9);
+  line-height: 1.8;
+}
+
+.horaires-overlay-info p {
+  margin: 10px 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+/* Cache les horaires mobiles par défaut */
+.horaires-mobile {
+  display: none;
+}
+
+/* Titres des sections */
+.footer-section h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: #d4af37;
+  margin-bottom: 20px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Informations de contact */
+.contact-info {
+  line-height: 1.8;
+}
+
+.contact-info p {
+  color: rgba(232, 226, 212, 0.8);
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.contact-info p:hover {
+  color: #d4af37;
+}
+
+/* Ligne de boutons sociaux */
+.follow-row {
+  display: flex;
+  flex-direction: row;
+  align-content: space-between;
+  gap: 15px;
+  align-items: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+/* Bouton réseau social */
+.follow-btn {
+  width: clamp(28px, 3vw, 36px);
+  height: clamp(28px, 3vw, 36px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  fill: #be9e66;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.1);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.follow-btn:hover {
+  fill: #d4af37;
+  background: rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* SVG à l'intérieur des boutons - TAILLE ADAPTATIVE */
+.follow-btn svg {
+  width: clamp(16px, 1.8vw, 20px);
+  height: clamp(16px, 1.8vw, 20px);
+  fill: inherit;
+}
+
+/* Séparateur décoratif */
+.footer-separator {
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, #574d3a 0%, #f7f0ba 50%, #574d3a 100%);
+  margin: 0 auto 20px;
+  opacity: 0.6;
+  animation: footerGlow 3s ease-in-out infinite;
+}
+
+/* Bas du footer - Copyright */
+.footer-bottom {
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 30px 40px;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    rgba(13, 13, 13, 0.8),
+    rgba(26, 26, 26, 0.8)
+  );
+  position: relative;
+  z-index: 2;
+}
+
+.footer-bottom p {
+  color: rgba(232, 226, 212, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* Animation du séparateur */
+@keyframes footerGlow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Effet hover sur les titres de section */
+.footer-section:hover h4 {
+  color: #f4e175;
+  transition: color 0.3s ease;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .footer-content {
+    padding: 50px 30px 30px;
+    gap: 30px;
+    font-size: 15px;
+  }
+  
+  .horaires-desktop {
+    display: none;
+  }
+
+  .horaires-mobile {
+    display: block;
+    font-size: 20px;
+  }
+  
+  .footer-bottom {
+    padding: 25px 30px;
+  }
+  
+  /* Active la popup sur tablette */
+  .footer-logo-container {
+    cursor: pointer;
+  }
+}
+
+/* Tablettes */
+@media (max-width: 768px) {
+  .footer-content {
+    padding: 40px 20px 30px;
+    gap: 30px;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .logo-footer {
+    width: 30%;
+    margin-bottom: 20px;
+  }
+
+  .horaires-mobile {
+    font-size: 10px;
+  }
+
+  .footer-logo-container {
+    cursor: pointer;
+  }
+
+  .footer-logo-container:hover {
+    transform: scale(1.05);
+  }
+
+  .footer-section h4 {
+    font-size: 14px;
+  }
+
+  .follow-row {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    padding: 10px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .footer-section h4 {
+    font-size: 1rem;
+  }
+
+  .contact-info p {
+    font-size: 10px;
+  }
+
+  .footer-content {
+    padding: 30px 15px 20px;
+  }
+
+  .logo-footer {
+    width: 70%;
+  }
+}
