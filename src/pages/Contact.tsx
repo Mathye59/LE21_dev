@@ -90,7 +90,7 @@ export default function Contact() {
   return (
     <div className="contact-container">
       <div className="contact-wrap">
-        <h1 className="contact-title">Nous Contacter</h1>
+        <h3 className="contact-title">Contact</h3>
 
         <div className="separator-corner-contact">
           <img src={`${API}/images/coin-gauche-h.png`} alt="coin" />

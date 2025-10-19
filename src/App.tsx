@@ -5,6 +5,7 @@ import Acceuil from './pages/Acceuil';
 import Blog from './pages/Blog';
 import ArticleDetail from './components/Blog/ArticleDetail';
 import Flash from './pages/Flash';
+import Contact from './pages/Contact';
 // ... autres imports
 
 function App() {
@@ -19,9 +20,8 @@ function App() {
             <Route path="/flash" element={<Flash />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<ArticleDetail />} />
-            {/* ajoute tes autres routes ici */}
-            {/* <Route path="/contact" element={<Contact />} /> */}
-            <Route path="*" element={<div>Page introuvable</div>} />
+            <Route path="/contact" element={<Contact />} />
+            
           </Routes>
         </main>
         
