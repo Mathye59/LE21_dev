@@ -8,7 +8,7 @@ type ArticleAccueil = {
   id: number;
   titre: string;
   contenu: string;
-  media: string | { filename: string }; // IRI ou objet
+  media: string | { filename: string };
 };
 
 export default function ArticlesAccueil() {
@@ -24,16 +24,11 @@ export default function ArticlesAccueil() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         
-        console.log('📦 Data ArticlesAccueil:', data);
-        
         let items = data.member || data['hydra:member'] || [];
-        console.log('📋 Articles avant resolve:', items);
         
-        // Résoudre les IRIs des médias
         items = await Promise.all(
           items.map(async (article: ArticleAccueil) => {
             if (typeof article.media === 'string') {
-              // C'est une IRI, on la résout
               try {
                 const mediaRes = await fetch(`${API}${article.media}`, { credentials: 'omit' });
                 if (mediaRes.ok) {
@@ -47,8 +42,6 @@ export default function ArticlesAccueil() {
           })
         );
         
-        console.log('📋 Articles après resolve:', items);
-        
         if (!cancel) setArticles(items);
       } catch (err) {
         console.error('[ArticlesAccueil] Erreur:', err);
@@ -60,56 +53,84 @@ export default function ArticlesAccueil() {
     return () => { cancel = true; };
   }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            
+            // Anime les mots un par un
+            const words = entry.target.querySelectorAll('.word');
+            words.forEach((word, index) => {
+              setTimeout(() => {
+                word.classList.add('visible');
+              }, index * 50);
+            });
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '-50px' }
+    );
+
+    const articles = document.querySelectorAll('.article-item');
+    articles.forEach((article) => observer.observe(article));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [articles]);
+
+  // Fonction pour diviser le texte en mots avec espaces
+  const splitTextIntoWords = (html: string) => {
+    // Enlève les balises HTML
+    const text = html.replace(/<[^>]*>/g, ' ');
+    // Split en gardant les espaces et ponctuation
+    return text.split(/(\s+)/).filter(part => part.trim()).map((word, index) => (
+      <span key={index} className="word">
+        {word}
+      </span>
+    ));
+  };
+
   if (loading) return <div className="articles-loading">Chargement...</div>;
   if (!articles.length) return null;
 
   return (
-        <ScrollReveal
-      baseOpacity={0}
-      enableBlur={true}
-      baseRotation={5}
-      blurStrength={10}
-    >
     <section className="articles-accueil">
       {articles.map((article, index) => {
         const isLeft = index % 2 === 0;
-        console.log('🖼️ Article:', article);
-        console.log('📸 Media:', article.media);
-        console.log('🔗 URL image:', `${API}/uploads/media/${article.media?.filename}`);
         
         return (
           <div key={article.id}>
-            <article className={`article-item ${isLeft ? 'article-left' : 'article-right'}`}>
+            <article 
+              className={`article-item ${isLeft ? 'article-left' : 'article-right'}`}
+            >
               {/* Image coin */}
               <img 
                 src={`${API}/images/${isLeft ? 'coin-gauche-h.png' : 'coin-droit-b.png'}`}
                 alt="coin décoratif"
                 className={`corner-image ${isLeft ? 'top-left' : 'bottom-right'}`}
               />
+              
               <div className="article">
-              {/* Titre */}
-              <h3 className="article-title inner">{article.titre}<span></span></h3>
-            <div className='article-flex'>
-             {/* Image */}
-              <div className="article-image">
-                <img 
-                  src={`${API}/uploads/media/${article.media?.filename}`} 
-                  alt={article.titre}
-                  onError={(e) => {
-                    console.error('Erreur chargement image:', `${API}/uploads/media/${article.media?.filename}`);
-                  }}
-                />
-              </div>
-              {/* Contenu */}
-              <div className="article-content">
-                
-                <div 
-                  className="article-text"
-                  dangerouslySetInnerHTML={{ __html: article.contenu }}
-                />
-              </div>
-              </div>
-
+                {/* Titre sans ScrollReveal */}
+                <h3 className="article-title ">{article.titre}</h3>               
+                <div className="article-flex">
+                  {/* Image */}
+                  <div className="article-image">
+                    <img 
+                      src={`${API}/uploads/media/${typeof article.media === 'object' ? article.media?.filename : ''}`} 
+                      alt={article.titre}
+                    />
+                  </div>
+                  
+                  {/* Contenu avec ScrollReveal */}
+                  <div className="article-content">
+                    <ScrollReveal html={article.contenu} delay={60} className="article-text" />
+                      
+                  </div>
+                </div>
               </div>
             </article>
 
@@ -125,6 +146,6 @@ export default function ArticlesAccueil() {
           </div>
         );
       })}
-    </section></ScrollReveal>
+    </section>
   );
 }

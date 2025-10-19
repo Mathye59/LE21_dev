@@ -1,119 +1,63 @@
-import React, { useEffect, useRef, useMemo, ReactNode, RefObject } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/all';
+import { useEffect, useMemo, useRef } from 'react';
 import './ScrollReveal.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
-interface ScrollRevealProps {
-  children: ReactNode;
-  scrollContainerRef?: RefObject<HTMLElement>;
-  enableBlur?: boolean;
-  baseOpacity?: number;
-  baseRotation?: number;
-  blurStrength?: number;
-  containerClassName?: string;
-  textClassName?: string;
-  rotationEnd?: string;
-  wordAnimationEnd?: string;
-}
-
-const ScrollReveal: React.FC<ScrollRevealProps> = ({
-  children,
-  scrollContainerRef,
-  enableBlur = true,
-  baseOpacity = 0.1,
-  baseRotation = 3,
-  blurStrength = 4,
-  containerClassName = '',
-  textClassName = '',
-  rotationEnd = 'bottom bottom',
-  wordAnimationEnd = 'bottom bottom'
-}) => {
-  const containerRef = useRef<HTMLHeadingElement>(null);
-
-  const splitText = useMemo(() => {
-    const text = typeof children === 'string' ? children : '';
-    return text.split(/(\s+)/).map((word, index) => {
-      if (word.match(/^\s+$/)) return word;
-      return (
-        <span className="word" key={index}>
-          {word}
-        </span>
-      );
-    });
-  }, [children]);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
-
-    gsap.fromTo(
-      el,
-      { transformOrigin: '0% 50%', rotate: baseRotation },
-      {
-        ease: 'none',
-        rotate: 0,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: 'top bottom',
-          end: rotationEnd,
-          scrub: true
-        }
-      }
-    );
-
-    const wordElements = el.querySelectorAll<HTMLElement>('.word');
-
-    gsap.fromTo(
-      wordElements,
-      { opacity: baseOpacity, willChange: 'opacity' },
-      {
-        ease: 'none',
-        opacity: 1,
-        stagger: 0.05,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: 'top bottom-=20%',
-          end: wordAnimationEnd,
-          scrub: true
-        }
-      }
-    );
-
-    if (enableBlur) {
-      gsap.fromTo(
-        wordElements,
-        { filter: `blur(${blurStrength}px)` },
-        {
-          ease: 'none',
-          filter: 'blur(0px)',
-          stagger: 0.05,
-          scrollTrigger: {
-            trigger: el,
-            scroller,
-            start: 'top bottom-=20%',
-            end: wordAnimationEnd,
-            scrub: true
-          }
-        }
-      );
-    }
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength]);
-
-  return (
-    <h2 ref={containerRef} className={`scroll-reveal ${containerClassName}`}>
-      <p className={`scroll-reveal-text ${textClassName}`}>{splitText}</p>
-    </h2>
-  );
+type Props = {
+  html?: string;            // string (peut contenir entités & balises)
+  children?: string;        // alternative: texte brut
+  className?: string;
+  delay?: number;           // ms entre mots
 };
 
-export default ScrollReveal;
+function decodeHtmlToText(input: string) {
+  // décode les entités HTML et enlève les balises
+  const div = document.createElement('div');
+  div.innerHTML = input ?? '';
+  return div.textContent || '';
+}
+
+export default function ScrollReveal({ html, children, className = '', delay = 50 }: Props) {
+  const elRef = useRef<HTMLDivElement>(null);
+
+  // 1) source → texte (décodé), on garde les retours
+  const plainText = useMemo(() => {
+    const src = html ?? children ?? '';
+    const text = decodeHtmlToText(src.replace(/<br\s*\/?>/gi, '\n'));
+    return text;
+  }, [html, children]);
+
+  // 2) tokenisation en mots ET espaces (pour ne pas “coller”)
+  const tokens = useMemo(() => {
+    if (!plainText.trim()) return [<span key="empty" />]; // évite un DIV vide
+    return plainText.split(/(\s+)/).map((part, i) => {
+      if (part === '') return null;
+      if (/^\s+$/.test(part)) {
+        return <span key={`s-${i}`} style={{ whiteSpace: 'pre' }}>{part}</span>;
+      }
+      return <span key={`w-${i}`} className="reveal-word">{part}</span>;
+    });
+  }, [plainText]);
+
+  // 3) IO → anime mot par mot
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        const words = el.querySelectorAll<HTMLElement>('.reveal-word');
+        words.forEach((w, i) => setTimeout(() => w.classList.add('reveal-word-visible'), i * delay));
+        io.unobserve(entry.target);
+      },
+      { threshold: 0.1, rootMargin: '-50px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [delay, plainText]);
+
+  return (
+    <div ref={elRef} className={`scroll-reveal ${className}`} aria-hidden={false}>
+      {tokens}
+    </div>
+  );
+}
+

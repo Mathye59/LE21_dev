@@ -9,13 +9,8 @@ type ArticleBlog = {
   titre: string;
   contenu: string;
   date: string;
-  auteur: {
-    prenom: string;
-    nom: string;
-  };
-  media: {
-    filename: string;
-  };
+  auteur: any;
+  media: any;
 };
 
 export default function ArticleDetail() {
@@ -30,7 +25,27 @@ export default function ArticleDetail() {
       try {
         const res = await fetch(`${API}/api/article_blogs/${id}`, { credentials: 'omit' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        let data = await res.json();
+        
+        // Résoudre auteur si IRI
+        if (typeof data.auteur === 'string' && data.auteur.startsWith('/api/')) {
+          try {
+            const auteurRes = await fetch(`${API}${data.auteur}`, { credentials: 'omit' });
+            if (auteurRes.ok) data.auteur = await auteurRes.json();
+          } catch (err) {
+            console.error('Erreur résolution auteur:', err);
+          }
+        }
+
+        // Résoudre media si IRI
+        if (typeof data.media === 'string' && data.media.startsWith('/api/')) {
+          try {
+            const mediaRes = await fetch(`${API}${data.media}`, { credentials: 'omit' });
+            if (mediaRes.ok) data.media = await mediaRes.json();
+          } catch (err) {
+            console.error('Erreur résolution media:', err);
+          }
+        }
         
         if (!cancel) setArticle(data);
       } catch (err) {
@@ -54,24 +69,26 @@ export default function ArticleDetail() {
   return (
     <div className="article-detail-container">
       <Link to="/blog" className="back-link">
-        ← Retour au blog
+        ← Retour 
       </Link>
 
       <article className="article-detail">
         {/* En-tête avec image */}
         <div className="article-header">
-          <img 
-            src={`${API}/uploads/media/${article.media?.filename}`} 
-            alt={article.titre}
-            className="article-header-image"
-          />
+          {article.media?.filename && (
+            <img 
+              src={`${API}/uploads/media/${article.media.filename}`} 
+              alt={article.titre}
+              className="article-header-image"
+            />
+          )}
           
           <div className="article-header-overlay">
             <h1 className="article-detail-title">{article.titre}</h1>
             
             <div className="article-detail-meta">
               <span className="article-detail-author">
-                Par {article.auteur?.prenom} {article.auteur?.nom}
+                Par {article.auteur?.pseudo || 'Anonyme'}
               </span>
               <span className="article-detail-date">
                 {new Date(article.date).toLocaleDateString('fr-FR', {
@@ -86,11 +103,10 @@ export default function ArticleDetail() {
 
         {/* Séparateur décoratif */}
         <div className="separator-decorative">
-          <svg viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50,40 L130,40 M170,40 L250,40" stroke="#F7F0BA" strokeWidth="1"/>
-            <circle cx="150" cy="40" r="8" fill="#F7F0BA"/>
-            <path d="M130,25 Q150,40 130,55 M170,25 Q150,40 170,55" stroke="#F7F0BA" strokeWidth="1.5" fill="none"/>
-          </svg>
+          <img 
+            src={`${API}/images/separateur.png`}
+            alt="séparateur"
+          />
         </div>
 
         {/* Contenu */}

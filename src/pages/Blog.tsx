@@ -8,14 +8,10 @@ type ArticleBlog = {
   id: number;
   titre: string;
   contenu: string;
+  resume?: string;
   date: string;
-  auteur: {
-    prenom: string;
-    nom: string;
-  };
-  media: {
-    filename: string;
-  };
+  auteur: any;
+  media: any;
 };
 
 export default function Blog() {
@@ -31,7 +27,35 @@ export default function Blog() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         
-        const items = data.member || data['hydra:member'] || [];
+        let items = data.member || data['hydra:member'] || [];
+        
+        // Résoudre les IRIs
+        items = await Promise.all(
+          items.map(async (article: any) => {
+            // Résoudre auteur si IRI
+            if (typeof article.auteur === 'string' && article.auteur.startsWith('/api/')) {
+              try {
+                const auteurRes = await fetch(`${API}${article.auteur}`, { credentials: 'omit' });
+                if (auteurRes.ok) article.auteur = await auteurRes.json();
+              } catch (err) {
+                console.error('Erreur résolution auteur:', err);
+              }
+            }
+
+            // Résoudre media si IRI
+            if (typeof article.media === 'string' && article.media.startsWith('/api/')) {
+              try {
+                const mediaRes = await fetch(`${API}${article.media}`, { credentials: 'omit' });
+                if (mediaRes.ok) article.media = await mediaRes.json();
+              } catch (err) {
+                console.error('Erreur résolution media:', err);
+              }
+            }
+            
+            return article;
+          })
+        );
+        
         if (!cancel) setArticles(items);
       } catch (err) {
         console.error('[Blog] Erreur:', err);
@@ -47,9 +71,18 @@ export default function Blog() {
     return <div className="blog-loading">Chargement des articles...</div>;
   }
 
+  if (articles.length === 0) {
+    return (
+      <div className="blog-container">
+        <h1 className="blog-title">Blog</h1>
+        <div className="blog-loading">Aucun article disponible</div>
+      </div>
+    );
+  }
+
   return (
     <div className="blog-container">
-      <h1 className="blog-title">Blog</h1>
+
       
       <div className="articles-list">
         {articles.map((article, index) => (
@@ -57,19 +90,22 @@ export default function Blog() {
             <Link to={`/blog/${article.id}`} className="article-card">
               {/* Séparateur décoratif coin */}
               <div className="separator-corner">
-                <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10,10 L75,75 M75,75 L140,10 M75,75 L75,140" stroke="#F7F0BA" strokeWidth="2" fill="none"/>
-                  <circle cx="75" cy="75" r="8" fill="#F7F0BA"/>
-                </svg>
+                <img 
+                  src={`${API}/images/coin-gauche-h.png`}
+                  alt="coin décoratif"
+                  className="corner-image"
+                />
               </div>
 
               {/* Image */}
-              <div className="article-image">
-                <img 
-                  src={`${API}/uploads/media/${article.media?.filename}`} 
-                  alt={article.titre}
-                />
-              </div>
+              {article.media?.filename && (
+                <div className="article-image">
+                  <img 
+                    src={`${API}/uploads/media/${article.media.filename}`} 
+                    alt={article.titre}
+                  />
+                </div>
+              )}
 
               {/* Contenu */}
               <div className="article-info">
@@ -78,13 +114,13 @@ export default function Blog() {
                 <div 
                   className="article-excerpt"
                   dangerouslySetInnerHTML={{ 
-                    __html: article.contenu.substring(0, 200) + '...' 
+                    __html: article.resume || article.contenu.substring(0, 200) + '...' 
                   }}
                 />
 
                 <div className="article-meta">
                   <span className="article-author">
-                    Par {article.auteur?.prenom || 'Anonyme'}
+                    Par {article.auteur?.pseudo || 'Anonyme'}
                   </span>
                   <span className="article-date">
                     {new Date(article.date).toLocaleDateString('fr-FR')}
@@ -96,11 +132,10 @@ export default function Blog() {
             {/* Séparateur entre articles */}
             {index < articles.length - 1 && (
               <div className="separator-horizontal">
-                <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20,30 L80,30 M120,30 L180,30" stroke="#F7F0BA" strokeWidth="1"/>
-                  <circle cx="100" cy="30" r="5" fill="#F7F0BA"/>
-                  <path d="M85,20 Q100,30 85,40 M115,20 Q100,30 115,40" stroke="#F7F0BA" strokeWidth="1" fill="none"/>
-                </svg>
+                <img 
+                  src={`${API}/images/separateur.png`}
+                  alt="séparateur"
+                />
               </div>
             )}
           </div>

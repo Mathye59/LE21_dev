@@ -1,0 +1,217 @@
+.contact-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Motif floral décoratif à droite */
+.contact-container::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 150px;
+  background-image: url('https://raw.githubusercontent.com/your-repo/floral-pattern.svg');
+  background-repeat: repeat-y;
+  background-size: contain;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.contact-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+  padding: 60px 50px;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  z-index: 1;
+}
+
+.contact-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: #f7f0ba;
+  text-align: center;
+  margin-bottom: 50px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Coin décoratif */
+.separator-corner-contact {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 80px;
+  height: 80px;
+  z-index: 10;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.separator-corner-contact img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Alertes */
+.alert {
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.alert-success {
+  background: rgba(122, 150, 122, 0.2);
+  border: 1px solid #7a967a;
+  color: #7a967a;
+}
+
+.alert-error {
+  background: rgba(221, 47, 47, 0.2);
+  border: 1px solid #dd2f2f;
+  color: #ff8f8f;
+}
+
+/* Formulaire */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-family: 'Playfair Display', serif;
+  color: #f7f0ba;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(247, 240, 186, 0.3);
+  border-radius: 8px;
+  color: #f7f0ba;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #f7f0ba;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(247, 240, 186, 0.1);
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: #0b2e23;
+  color: #f7f0ba;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+/* Bouton submit */
+.submit-btn {
+  padding: 15px 40px;
+  background: linear-gradient(60deg, rgba(87, 77, 41, 1) 0%, rgba(247, 240, 186, 1) 32%, rgba(87, 77, 41, 1) 67%, rgba(247, 240, 186, 1) 100%);
+  color: #0b2e23;
+  border: 2px solid #0b2e23;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(247, 240, 186, 0.4);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-wrap {
+    padding: 40px 30px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .separator-corner-contact {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-container {
+    padding: 40px 15px;
+  }
+
+  .contact-wrap {
+    padding: 30px 20px;
+  }
+
+  .contact-title {
+    margin-bottom: 35px;
+  }
+
+  .submit-btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+  }
+
+  .separator-corner-contact {
+    width: 50px;
+    height: 50px;
+  }
+}

@@ -6,6 +6,7 @@
   width: 100%;
   z-index: 1;
   display: block;
+  max-height: 350px;
 }
 
 /* Ligne décorative dorée en haut du footer */
@@ -28,19 +29,20 @@
 .footer-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 60px 40px 40px;
+  padding: 10px;
   display: flex;
   flex-direction: row; 
-  align-content: space-evenly;
-  justify-content: center;
-  gap: 10px;
+  align-items: flex-start;
+  justify-content: center; 
+  gap: 40px; 
   position: relative;
   z-index: 2;
+  height: fit-content;
 }
 
 .size-footer {
   width: fit-content;
-  min-width: 25%;
+  max-width: 25%;
 }
 
 /* Section individuelle du footer */
@@ -48,8 +50,13 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  flex-wrap: wrap;;
 }
-
+/* Les sections dans le groupe */
+.footer-sections-group .footer-section {
+  flex: 1;
+  min-width: 250px;
+}
 /* Logo du footer */
 .logo-footer {
   width: 100%;
@@ -83,21 +90,7 @@
 
 /* === OVERLAY HORAIRES AU-DESSUS DU FOOTER === */
 .horaires-mobile-overlay {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(-100%);
-  width: 90%;
-  max-width: 500px;
-  background: rgba(26, 26, 26, 0.95);
-  backdrop-filter: blur(10px);
-  border: 2px solid #d4af37;
-  border-radius: 15px;
-  padding: 30px 20px;
-  text-align: center;
-  z-index: 10;
-  box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.5);
-  animation: slideDown 0.3s ease-out;
+  display: none;
 }
 
 @keyframes slideDown {
@@ -140,9 +133,55 @@
 }
 
 /* Cache les horaires mobiles par défaut */
-.horaires-mobile {
-  display: none;
+.horaires-mobile-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    width: 90%;
+    max-width: 450px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.98), rgba(13, 13, 13, 0.98));
+    backdrop-filter: blur(15px);
+    border: 2px solid #d4af37;
+    border-radius: 15px;
+    padding: 25px 30px;
+    text-align: center;
+    z-index: 100;
+    box-shadow: 0 -8px 40px rgba(212, 175, 55, 0.3);
+    animation: slideDown 0.3s ease-out;
+   
+  }
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(calc(-100% - 30px));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(calc(-100% - 15px));
+  }
 }
+.horaires-overlay-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: #d4af37;
+  margin-bottom: 20px;
+  letter-spacing: 3px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.horaires-overlay-info {
+  color: rgba(232, 226, 212, 0.95);
+  line-height: 2;
+}
+
+.horaires-overlay-info p {
+  margin: 12px 0;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
 
 /* Titres des sections */
 .footer-section h4 {
@@ -158,6 +197,7 @@
 /* Informations de contact */
 .contact-info {
   line-height: 1.8;
+  flex-wrap: wrap;
 }
 
 .contact-info p {
@@ -203,6 +243,7 @@
   box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
+
 /* SVG à l'intérieur des boutons - TAILLE ADAPTATIVE */
 .follow-btn svg {
   width: clamp(16px, 1.8vw, 20px);
@@ -223,7 +264,7 @@
 /* Bas du footer - Copyright */
 .footer-bottom {
   border-top: 1px solid rgba(212, 175, 55, 0.2);
-  padding: 30px 40px;
+  padding: 10px 0px;
   text-align: center;
   background: linear-gradient(
     135deg,
@@ -239,6 +280,17 @@
   font-size: 0.9rem;
   margin: 0;
   letter-spacing: 0.5px;
+}
+
+.footer-sections-group {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 1; /* Prend l'espace disponible */
+  width: fit-content;
+  max-width: 550px;
 }
 
 /* Animation du séparateur */
@@ -260,20 +312,33 @@
 /* === RESPONSIVE === */
 @media (max-width: 1024px) {
   .footer-content {
-    padding: 50px 30px 30px;
+    padding: 10px;
     gap: 30px;
     font-size: 15px;
   }
   
   .horaires-desktop {
-    display: none;
-  }
-
-  .horaires-mobile {
-    display: block;
-    font-size: 20px;
+    display: none !important;
   }
   
+  .horaires-mobile-overlay {
+    display: block;
+  }
+
+   .horaires-mobile-overlay {
+    width: 85%;
+    padding: 20px 25px;
+    
+  }
+  
+  .horaires-overlay-title {
+    font-size: 1.3rem;
+  }
+  
+  .horaires-overlay-info p {
+    font-size: 0.9rem;
+  }
+
   .footer-bottom {
     padding: 25px 30px;
   }
@@ -287,10 +352,10 @@
 /* Tablettes */
 @media (max-width: 768px) {
   .footer-content {
-    padding: 40px 20px 30px;
-    gap: 30px;
+    padding: 10px;
+    gap: 10px;
     text-align: center;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .logo-footer {
@@ -299,7 +364,7 @@
   }
 
   .horaires-mobile {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .footer-logo-container {
@@ -322,23 +387,56 @@
   .footer-bottom {
     padding: 10px;
   }
+  .footer-sections-group .footer-section{
+    min-width: 200px;
+  }
+  .horaires-overlay-info p {
+    font-size: 0.85rem;
+    margin: 10px 0;
+  }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
+  .main-footer {
+    max-height: none;
+  }
   .footer-section h4 {
     font-size: 1rem;
   }
 
   .contact-info p {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .footer-content {
-    padding: 30px 15px 20px;
+    padding: 10px;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+  }
+  
+  .footer-content .size-footer {
+    min-width: 150px;
+  
   }
 
   .logo-footer {
     width: 70%;
   }
+  .footer-bottom p {
+    font-size: 0.6rem;
+  }
+  .horaires-mobile-overlay {
+    width: 90%;
+    max-width: 320px;
+    padding: 18px 20px;
+  }
+  
+  .horaires-overlay-title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+  
+  
 }

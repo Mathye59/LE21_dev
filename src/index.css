@@ -16,7 +16,7 @@ body {
   font-family: 'Playfair Display', serif;
   
   /* Dégradé vert appliqué sur tout le body */
-  background: linear-gradient(90deg, #2C5247 7%, #0F3426 35%, #0C291E 68%, #091F16 100%);
+  background: linear-gradient(90deg, #2C5247 7%, #0F3426 35%, #0C291E 68%, #091F16 100%);;
   background-attachment: fixed; /* Fixe le fond même au scroll */
 }
 h1, h2, h3, h4, h5, h6 {
@@ -25,7 +25,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 4rem;
   font-style: italic;
   font-weight: bold;
-  background: -webkit-linear-gradient(90deg,rgba(87, 77, 41, 1) 0%, rgba(247, 240, 186, 1) 32%, rgba(87, 77, 41, 1) 67%, rgba(247, 240, 186, 1) 100%);
+  background: -webkit-linear-gradient(80deg,rgba(87, 77, 41, 1) 0%, rgba(247, 240, 186, 1) 32%, rgba(87, 77, 41, 1) 67%, rgba(247, 240, 186, 1) 100%);
   /* Chrome, Edge, Safari */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -59,10 +59,10 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   width: 100%;
   position: relative;
-  
+  padding-bottom: 20px;
   /* Frise de feuilles à droite uniquement */
   background: url('http://127.0.0.1:8080/images/feuilles_droite.png') right top repeat-y;
-  background-size: auto 50%; /* S'adapte à la hauteur */
+  background-size: auto 40%; /* S'adapte à la hauteur */
 }
 
 /* Wrapper de contenu - Centré avec max-width */
@@ -74,11 +74,24 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   z-index: 1;
 }
-
-/* Responsive - Masque la frise sur petits écrans si nécessaire */
-@media (max-width: 768px) {
+@media (max-width: 1400px) {
   .app-main {
-    background-size: 80px auto; /* Réduit la taille de la frise sur mobile */
+    background-size: auto 30%; /* Ajuste la taille de la frise */
+  }
+}
+
+@media (max-width: 950px) {
+  .app-main {
+    background-size: auto 20%; /* Ajuste la taille de la frise */
+  }
+}
+/* Responsive - Masque la frise sur petits écrans si nécessaire */
+@media (max-width: 650px) {
+  .app-main {
+    background-size: auto 10%; /* Ajuste la taille de la frise */
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 2.5rem;
   }
 }
 
@@ -89,5 +102,9 @@ h1, h2, h3, h4, h5, h6 {
   
   .content-wrapper {
     padding: 20px 15px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
   }
 }

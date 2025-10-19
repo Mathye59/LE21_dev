@@ -9,56 +9,53 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 
-#[ApiResource] // [API] Expose l’entité en REST (API Platform) avec opérations par défaut (GET/POST/PUT/PATCH/DELETE).
+#[ApiResource]
 #[ORM\Entity(repositoryClass: ArticleBlogRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class ArticleBlog
 {
     // --- Identité -----------------------------------------------------------
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null; // [DB] PK auto-incrément.
+    private ?int $id = null;
 
     // --- Données de contenu -------------------------------------------------
     #[ORM\Column(length: 255)]
-    private ?string $titre = null; // [UX] 255 caractères ; prévoir Assert\Length côté validation.
+    private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $contenu = null; // [SECURITY] Si HTML : penser à sanitzer côté service/contrôleur.
+    private ?string $contenu = null;
+
+    /**
+     * Résumé court (affiché dans les listes/teasers).
+     * Nullable : s’il est vide, il sera auto-généré à partir de "contenu".
+     */
+    #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => 'Résumé court de l’article'])]
+    private ?string $resume = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null; // [TIME] stocke une date (sans heure). Voir notes pour DateTimeImmutable.
+    private ?\DateTime $date = null;
 
     // --- Relations ----------------------------------------------------------
     #[ORM\ManyToOne(inversedBy: 'articleBlogs')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Tatoueur $auteur = null; 
-    // [RELATION] Plusieurs articles peuvent avoir le même auteur (Tatoueur).
-    // [DB] NOT NULL → chaque article DOIT avoir un auteur.
-    // [PERF] Index auto par Doctrine sur FK ; utile pour filtres par auteur.
+    private ?Tatoueur $auteur = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Media $media = null;
-    // [RELATION] OneToOne strict → un Media ne peut être lié qu’à UN article (exclusif).
-    // [DB] NOT NULL → l’article doit toujours avoir un media (image d’illustration).
-    // [CASCADE] persist/remove : persiste/efface automatiquement le Media via l’Article.
-    // [POLITIQUE] si tu veux réutiliser un Media pour plusieurs articles, remplacer par ManyToOne.
 
     /**
      * @var Collection<int, Commentaire>
      */
     #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'article')]
     private Collection $commentaires;
-    // [RELATION] Un article a plusieurs commentaires (OneToMany).
-    // [OWNING SIDE] C’est Commentaire (propriété "article") qui possède la FK.
-    // [ORPHAN] Pas d’orphanRemoval : supprimer un article ne supprime pas les commentaires automatiquement (à décider).
 
     public function __construct()
     {
         $this->commentaires = new ArrayCollection();
-        // [DX] Tu peux initialiser $date ici si souhaité :
-        // $this->date = new \DateTime(); // date du jour par défaut (optionnel)
+        // $this->date = new \DateTime(); // si tu veux une date par défaut
     }
 
     // --- Getters / Setters --------------------------------------------------
@@ -87,6 +84,17 @@ class ArticleBlog
     public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
+        return $this;
+    }
+
+    public function getResume(): ?string
+    {
+        return $this->resume;
+    }
+
+    public function setResume(?string $resume): static
+    {
+        $this->resume = $resume;
         return $this;
     }
 
@@ -135,7 +143,7 @@ class ArticleBlog
     {
         if (!$this->commentaires->contains($commentaire)) {
             $this->commentaires->add($commentaire);
-            $commentaire->setArticle($this); // [RELATION] met à jour la FK côté propriétaire.
+            $commentaire->setArticle($this);
         }
         return $this;
     }
@@ -143,13 +151,42 @@ class ArticleBlog
     public function removeCommentaire(Commentaire $commentaire): static
     {
         if ($this->commentaires->removeElement($commentaire)) {
-            // [RELATION] Si le commentaire pointait vers cet article, on le détache.
             if ($commentaire->getArticle() === $this) {
                 $commentaire->setArticle(null);
-                // [ORPHAN] Si tu mets orphanRemoval=true sur la relation (et nullable=false côté Commentaire.article),
-                // ce set null échouera. À décider selon ta politique de suppression.
             }
         }
         return $this;
+    }
+
+    // --- Hooks : auto-compléter le résumé si vide ---------------------------
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function autofillResumeIfEmpty(): void
+    {
+        if ($this->resume || !$this->contenu) {
+            return;
+        }
+
+        // Nettoyage basique du HTML → texte simple
+        $plain = strip_tags((string) $this->contenu);
+        $plain = html_entity_decode($plain, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $plain = preg_replace('/\s+/u', ' ', trim($plain)) ?? '';
+
+        // Coupe proprement (≈ 220 caractères)
+        $max = 220;
+        $this->resume = mb_strlen($plain) > $max
+            ? mb_substr($plain, 0, $max) . '…'
+            : $plain;
+    }
+    // --- Hook : définir la date actuelle si vide au moment de la création ---
+    #[ORM\PrePersist]
+    public function setDateIfEmpty(): void
+    {
+        if ($this->date === null) {
+            // Choisis le fuseau si tu veux, ex. 'Europe/Paris'
+            $this->date = new \DateTime(); 
+            // $this->date = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+        }
     }
 }

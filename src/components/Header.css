@@ -94,4 +94,7 @@
 @media (max-width: 768px) {
   .nav-left, .nav-right { display: none; }
   .mobile-menu-toggle { display: block; }
+  .logo {
+    width: 150px;
+  }
 }

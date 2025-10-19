@@ -94,13 +94,6 @@ export default function Footer() {
         {horairesMobileOpen && (
           <div ref={overlayRef} className="horaires-mobile-overlay">
             {/* Logo dans l'overlay */}
-            {logoUrl && (
-              <img 
-                src={logoUrl} 
-                alt={entreprise?.nom || "Logo"} 
-                className="logo-overlay" 
-              />
-            )}
             
             {/* Titre */}
             <h3 className="horaires-overlay-title">HORAIRES</h3>
@@ -143,7 +136,7 @@ export default function Footer() {
               )}
             </div>
           </div>
-
+              <div className="footer-sections-group">
           {/* Section Adresse */}
           <div className="footer-section size-footer">
             <h4>Adresse</h4>
@@ -215,7 +208,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-
+          </div>
           {/* Section Horaires - Cachée sur mobile, visible sur desktop */}
           <div className="footer-section horaires-desktop size-footer">
             <h4>Horaires</h4>

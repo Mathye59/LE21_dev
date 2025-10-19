@@ -101,22 +101,126 @@ h2, h3, h4 {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 60px 20px;
+@media (max-width: 1400px) {
+  .articles-accueil {
+    margin: 1px;
+    width: 80%;
+  }
+  .article-item {
+    padding: 30px 20px;
+    gap: 30px;
+  }
+  
+  .article-left .article-image,
+  .article-right .article-image {
+    width: 30%;
+  }
+}
+
+@media (max-width: 968px) {
+  .articles-item{
+    justify-content: center;
+  }
+  .article-flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .article-item,
+  .article-left,
+  .article-right {
+    flex-direction: column !important;
+  }
+  
+
+  .article-left .article-image,
+  .article-right .article-image {
+    order: 1;
+    width: 100%; /* ← Changé pour responsive */
+    max-width: 280px; /* ← Limite la taille max */
   }
 
-  .services-grid {
-    gap: 20px;
+  .article-left .article-content,
+  .article-right .article-content {
+    order: 2;
+  }
+
+  .article-image {
+    height: auto;
+    width: 100%; /* ← Au lieu de 250px fixe */
+    max-width: 280px;
+  }
+
+  .corner-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .separator-horizontal img {
+    height: 100px;
+  }
+  .article-item{
+    max-width: 100%;
+  }
+   .article-content{
+    min-width: 90%;
+  }
+  
+  .article-image{
+    min-width: auto; /* ← Enlevé le 80% qui forçait la taille */
+  }
+}
+/* Section Carrousel */
+.carousel-section {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Évite le débordement */
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.carousel-section h2 {
+  font-family: 'Tangerine', cursive;
+  font-size: 3rem;
+  color: #F7F0BA;
+  text-align: center;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+/* ← AJOUTE CE NOUVEAU MEDIA QUERY */
+@media (max-width: 750px) {
+  .article-image {
+    max-width: 250px;
+  }
+  
+  .article-title {
+    font-size: 3.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-section {
-    padding: 40px 15px;
+  .article-item {
+    padding: 30px 20px;
   }
 
-  .service-card {
-    padding: 30px 20px;
+  .article-image {
+    height: auto;
+    max-width: 220px; /* ← Réduit encore plus sur petit écran */
+  }
+
+    .corner-image {
+    width: 90px;
+    height: 90px;
+  }
+
+  .separator-horizontal img {
+    height: 70px;
+  }
+  .article-title {
+    font-size: 3rem;
   }
 }

@@ -8,8 +8,6 @@ use App\Entity\Tatoueur;                         // Utilisée via AssociationFie
 
 use App\Controller\Admin\CategorieCrudController;// Pour ouvrir la modale EA sur Catégorie
 use App\Enum\StatutFlash;                        // Enum métier (DISPONIBLE, RESERVE, INDISPONIBLE)
-use Doctrine\ORM\EntityManagerInterface;
-
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;   // Config des pages EA (INDEX/NEW/EDIT/DETAIL)
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action; // Représentation d’une action EA
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;// Builder des actions
@@ -19,13 +17,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField; // Champs relationne
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;      // Sélecteur pour Enum / listes
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;        // Champs texte simple
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;       // Affichage d’images (lecture seule)
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;  // (non utilisé ici) pour textarea riche
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;    // Pour updatedAt en index
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;            // Champ générique (pour Vich)
 use Symfony\Component\Form\Extension\Core\Type\EnumType;    // Rendu formulaire pour backed enums PHP 8.1+
-use Symfony\Component\Validator\Constraints\Length;         // (pas utilisé ici) — validations possibles
 use Vich\UploaderBundle\Form\Type\VichImageType;            // Champ d’upload Vich (UploadableField)
-
+use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 /**
  * ==========================================================
  *  FlashCrudController (EasyAdmin)
@@ -162,6 +158,11 @@ class FlashCrudController extends AbstractCrudController
             ->autocomplete()             // [UX] utile si beaucoup de catégories
             ->setRequired(true)
             ->onlyOnForms();             // [UX] pas d’intérêt hors formulaire
+        
+        // --- PRIX ---------------------------------------------------------------
+        yield MoneyField::new('prix', 'Prix')
+            ->setCurrency('EUR')
+            ->setNumDecimals(2);
 
         // Tatoueur : ManyToOne — on ne crée pas depuis ici (pas de setCrudController)
         yield AssociationField::new('tatoueur', 'Tatoueur')

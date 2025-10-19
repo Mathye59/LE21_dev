@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Acceuil from './pages/Acceuil';
 import Blog from './pages/Blog';
 import ArticleDetail from './components/Blog/ArticleDetail';
+import Flash from './pages/Flash';
 // ... autres imports
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
          <main className="app-main">
           <Routes>
             <Route path="/" element={<Acceuil />} />
+            <Route path="/flash" element={<Flash />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<ArticleDetail />} />
             {/* ajoute tes autres routes ici */}

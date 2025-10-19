@@ -160,6 +160,10 @@ body .form-control:focus, body .form-select:focus {
   box-shadow: 0 0 0 2px  var(--le21-gold) !important;
 }
 body .form-help { color: var(--le21-text-2) !important; }
+.input-group-text{
+  background-color: var(--le21-gold) !important;
+  border: none !important;
+}
 
 /* switch */
 body .form-switch .form-check-input {

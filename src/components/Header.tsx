@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import "./Header.css";
+import { NavLink } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL as string;
 
@@ -37,8 +38,14 @@ export default function Header() {
         {/* Nav gauche */}
         <nav className="nav-left" aria-label="Navigation principale gauche">
           <ul>
-            <li><a href="#accueil">Accueil</a></li>
-            <li><a href="#flash">Flash</a></li>
+            <li><NavLink to="/" className={({isActive}) => isActive ? "active" : undefined}>
+                Accueil
+              </NavLink>
+            </li>
+            <li><NavLink to="/flash" className={({isActive}) => isActive ? "active" : undefined}>
+                Flash
+              </NavLink>
+              </li>
           </ul>
         </nav>
         {/* Logo centré */}
@@ -55,8 +62,14 @@ export default function Header() {
         {/* Nav droite */}
         <nav className="nav-right" aria-label="Navigation principale droite">
           <ul>
-            <li><a href="#blog">Blog</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li> <NavLink to="/blog" className={({isActive}) => isActive ? "active" : undefined}>
+                Blog
+              </NavLink>
+          </li>
+            <li> <NavLink to="/contact" className={({isActive}) => isActive ? "active" : undefined}>
+                  Contact
+                </NavLink>
+            </li>
           </ul>
         </nav>
 
@@ -76,19 +89,27 @@ export default function Header() {
       <div className={`mobile-menu${open ? " active" : ""}`}>
         <ul onClick={() => setOpen(false)}>
           <li>
-            <a href="#accueil">Accueil</a>
+            <NavLink to="/" className={({isActive}) => isActive ? "active" : undefined}>
+                Accueil
+              </NavLink>
             <img src={separatorSrc} alt="" style={{ width: '200px', margin: '10px auto', display: 'block', opacity: 0.7 }} />
           </li>
           <li>
-            <a href="#flash">Flash</a>
+            <NavLink to="/flash" className={({isActive}) => isActive ? "active" : undefined}>
+                Flash
+              </NavLink>
             <img src={separatorSrc} alt="" style={{ width: '200px', margin: '10px auto', display: 'block', opacity: 0.7 }} />
           </li>
           <li>
-            <a href="#blog">Blog</a>
+            <NavLink to="/blog" className={({isActive}) => isActive ? "active" : undefined}>
+                Blog
+              </NavLink>
             <img src={separatorSrc} alt="" style={{ width: '200px', margin: '10px auto', display: 'block', opacity: 0.7 }} />
           </li>
           <li>
-            <a href="#contact">Contact</a>
+            <NavLink to="/contact" className={({isActive}) => isActive ? "active" : undefined}>
+                  Contact
+                </NavLink>
           </li>
         </ul>
       </div>

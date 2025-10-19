@@ -13,6 +13,10 @@ export default defineConfig({
     hmr: {
       overlay: true
     }
-    
+  },
+  resolve: {
+    alias: {
+      'gsap/ScrollTrigger': '/node_modules/gsap/ScrollTrigger.js'
+    }
   }
 })

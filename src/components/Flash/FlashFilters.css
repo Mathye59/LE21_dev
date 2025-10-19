@@ -1,0 +1,215 @@
+/* Container des filtres */
+.flash-filters {
+
+ 
+}
+
+/* Sections de filtres */
+.flash-filters .filter-section {
+  margin-bottom: 30px;
+}
+
+.flash-filters .filter-section:last-of-type {
+  margin-bottom: 20px;
+}
+
+/* Labels des filtres */
+.flash-filters label,
+.flash-filters .filter-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  color: #F7F0BA;
+  margin-bottom: 12px;
+  display: block;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Range sliders */
+.flash-filters input[type="range"] {
+  width: 100%;
+  height: 6px;
+  background: #F7F0BA;
+  border-radius: 10px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.flash-filters input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #F7F0BA;
+  border: 3px solid #0B2E23;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.flash-filters input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(247, 240, 186, 0.5);
+}
+
+.flash-filters input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #F7F0BA;
+  border: 3px solid #0B2E23;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.flash-filters input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(247, 240, 186, 0.5);
+}
+
+/* Valeurs min/max */
+.flash-filters .range-values {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: rgba(247, 240, 186, 0.7);
+  margin-top: 8px;
+}
+
+/* Section catégories */
+.flash-filters .categories-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 10px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.flash-filters .categories-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.flash-filters .categories-list::-webkit-scrollbar-track {
+  background: rgba(247, 240, 186, 0.1);
+  border-radius: 10px;
+}
+
+.flash-filters .categories-list::-webkit-scrollbar-thumb {
+  background: #F7F0BA;
+  border-radius: 10px;
+}
+
+/* Checkboxes catégories */
+.flash-filters .category-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.flash-filters .category-item:hover {
+  color: #fff;
+}
+
+.flash-filters .category-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #F7F0BA;
+  cursor: pointer;
+}
+
+/* Titre de section */
+.flash-filters .section-title {
+  font-family: 'Tangerine', cursive;
+  font-size: 3rem;
+  color: #F7F0BA;
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+.flash-filters h4,
+.flash-filters .filter-section h4 {
+  font-family: 'Tangerine', cursive;
+  font-size: 2rem; /* ← Ajuste ici */
+}
+/* Boutons d'action */
+.flash-filters .filter-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+}
+.range{
+    color: #F7F0BA;
+}
+input [type="range" i]{
+    background: rgba(87, 77, 41, 1) ;
+  /* Chrome, Edge, Safari */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Firefox */
+  background-clip: text;
+  
+  margin-top: 5px;
+}
+
+.flash-filters .filter-actions button {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #F7F0BA;
+  background: transparent;
+  color: #F7F0BA;
+}
+
+.flash-filters .filter-actions button:first-child {
+  background: transparent;
+}
+
+.flash-filters .filter-actions button:first-child:hover {
+  background: rgba(247, 240, 186, 0.1);
+  transform: translateY(-2px);
+}
+
+.flash-filters .filter-actions button:last-child {
+  background: #F7F0BA;
+  color: #0B2E23;
+  border-color: #F7F0BA;
+}
+
+.flash-filters .filter-actions button:last-child:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(247, 240, 186, 0.3);
+}
+/*css pour FilterRange et FilterSection composants si besoin */
+flex-col-gauche {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  
+  .filter-actions{
+    flex-direction: column;
+  }
+}
+@media (max-width: 768px) {
+  .flash-filters {
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+}

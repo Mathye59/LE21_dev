@@ -12,6 +12,7 @@ use App\Enum\StatutFlash;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Categorie;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[Vich\Uploadable]
@@ -47,6 +48,10 @@ class Flash
     //mettre à jour la date de modification à chaque upload
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2, nullable: true)]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?float $prix = null;
 
     public function __construct()
     {
@@ -139,9 +144,21 @@ class Flash
     {
         return $this->updatedAt;
     }
+
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(?float $prix): self
+    {
+        $this->prix = $prix;
         return $this;
     }
 }
