@@ -36,7 +36,7 @@ services:
         - "8080:80"   
       volumes:
         - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
-      
+        - ./backups:/var/www/html/backups
 
 
   front:

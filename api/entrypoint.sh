@@ -25,6 +25,9 @@ fi
 echo "📦 Création de la base de données si nécessaire..."
 php bin/console doctrine:database:create --if-not-exists 2>/dev/null || true
 
+echo "📥 Import du backup SQL..."
+mysql -h db -u root -proot --default-character-set=utf8mb4 le_21 < /var/www/html/backups/le21_backup_20251019_204830.sql
+
 echo "🔄 Exécution des migrations..."
 php bin/console doctrine:migrations:migrate -n 2>/dev/null || true
 
