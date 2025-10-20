@@ -13,7 +13,7 @@ use App\Entity\Flash;
 use App\Entity\Media;
 use App\Entity\Tatoueur;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-// use App\Entity\User; // décommente si tu as créé User
+use App\Entity\User;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -31,7 +31,6 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        // Redirige par défaut vers le carrousel (modifiable)
         $url = $this->adminUrlGenerator
             ->setController(CarrouselCrudController::class)
             ->generateUrl();
@@ -44,7 +43,6 @@ class DashboardController extends AbstractDashboardController
         return Dashboard::new()
             ->setTitle('Site Le 21 — Administration')
             ->setLocales(['fr']);
-            
     }
 
     public function configureMenuItems(): iterable
@@ -71,12 +69,12 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Commentaires', 'fa fa-comments', Commentaire::class);   //gestion commentaires des articles (validation)
 
         // 5) ADMIN
-       
+
         yield MenuItem::section('Administration')->setPermission('ROLE_ADMIN');
         yield MenuItem::linkToCrud('Entreprise', 'fa fa-building', Entreprise::class)->setPermission('ROLE_ADMIN'); //gestion infos entreprise
         yield MenuItem::linkToCrud('Tatoueurs', 'fa fa-user', Tatoueur::class)->setPermission('ROLE_ADMIN'); //gestion tatoueurs 
-        
-       
+
+
     }
     public function configureAssets(): Assets
     {

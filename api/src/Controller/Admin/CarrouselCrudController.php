@@ -80,7 +80,7 @@ class CarrouselCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Carrousel')
             ->setDefaultSort(['position' => 'ASC'])
             ->setPaginatorPageSize(15);
-            // ->setEntityPermission('ROLE_ADMIN'); // décommenter si réservé aux admins
+        // ->setEntityPermission('ROLE_ADMIN'); // décommenter si réservé aux admins
     }
 
     /**
@@ -157,11 +157,11 @@ class CarrouselCrudController extends AbstractCrudController
 
         $this->addFlash('success', sprintf(
             'L’entrée "%s" est désormais %s.',
-            $item->getTitle() ?: ('#'.$item->getId()),
+            $item->getTitle() ?: ('#' . $item->getId()),
             $item->isActive() ? 'active' : 'inactive'
         ));
-
-        return $this->redirect($this->getContext()->getReferrer());
+        $referer = $this->getContext()->getRequest()->headers->get('referer');
+        return $this->redirect($referer ?: $this->generateUrl('admin'));
     }
 
     /**
@@ -178,21 +178,26 @@ class CarrouselCrudController extends AbstractCrudController
 
         if ($pos <= 1) {
             $this->addFlash('info', 'Cet élément est déjà en première position.');
-            return $this->redirect($this->getContext()->getReferrer());
+            $referer = $this->getContext()->getRequest()->headers->get('referer');
+            return $this->redirect($referer ?: $this->generateUrl('admin'));
         }
 
         $repo = $em->getRepository(Carrousel::class);
         $prev = $repo->findOneBy(['position' => $pos - 1]);
 
         if (!$prev) {
-            $this->addFlash('warning', 'Incohérence détectée dans les positions (trou au-dessus). Pense à renuméroter 1..N.');
-            return $this->redirect($this->getContext()->getReferrer());
+            $this->addFlash('warning', 'Incohérence détectée dans les positions.');
+            $referer = $this->getContext()->getRequest()->headers->get('referer');
+            return $this->redirect($referer ?: $this->generateUrl('admin'));
         }
 
         $this->swapPositionsWithBuffer($em, $current, $prev, 0);
         $this->addFlash('success', 'Élément déplacé vers le haut.');
-        return $this->redirect($this->getContext()->getReferrer());
+
+        $referer = $this->getContext()->getRequest()->headers->get('referer');
+        return $this->redirect($referer ?: $this->generateUrl('admin'));
     }
+
 
     /**
      * Action : déplacer vers le BAS (position + 1)
@@ -210,14 +215,16 @@ class CarrouselCrudController extends AbstractCrudController
 
         if (!$next) {
             $this->addFlash('info', 'Cet élément est déjà en dernière position.');
-            return $this->redirect($this->getContext()->getReferrer());
+            $referer = $this->getContext()->getRequest()->headers->get('referer');
+            return $this->redirect($referer ?: $this->generateUrl('admin'));
         }
 
         $this->swapPositionsWithBuffer($em, $current, $next, 0);
         $this->addFlash('success', 'Élément déplacé vers le bas.');
-        return $this->redirect($this->getContext()->getReferrer());
-    }
 
+        $referer = $this->getContext()->getRequest()->headers->get('referer');
+        return $this->redirect($referer ?: $this->generateUrl('admin'));
+    }
     /**
      * Swap des positions avec "valeur tampon" (safe avec unicité non différable).
      *
