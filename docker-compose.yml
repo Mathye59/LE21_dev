@@ -16,12 +16,13 @@ services:
       retries: 20
     volumes:
       - dbdata:/var/lib/mysql
-      - ./backup:/docker-entrypoint-initdb.d
+
 
   api:
       build:
         context: ./api
         dockerfile: Dockerfile
+      command: /entrypoint.sh  
       container_name: le21_api
       environment:
         APP_ENV: dev
@@ -36,14 +37,22 @@ services:
         - "8080:80"   
       volumes:
         - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
-      
+        - ./backups:/backup:ro  #  monte le dossier de backup en lecture seule
 
 
   front:
     image: node:20-alpine
     container_name: le21_front
     working_dir: /app
-    command: sh -lc "npm ci && npm run dev -- --host --port 5173"
+    command: sh -c "
+      echo '⏳ Attente de l API sur http://api:80...';
+      while ! wget -q --spider http://api:80 2>/dev/null; do 
+        echo '   Toujours en attente...';
+        sleep 2;
+      done;
+      echo '✅ API accessible, démarrage du front...';
+      npm ci && npm run dev -- --host --port 5173
+      "
     environment:
       VITE_API_URL: "http://127.0.0.1:8080"
       CHOKIDAR_USEPOLLING: "true"

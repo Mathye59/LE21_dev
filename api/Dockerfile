@@ -1,8 +1,9 @@
 FROM php:8.2-apache
 
-# Installation des dépendances OS (intl + composer requis)
+# Installation des dépendances OS + client MySQL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libicu-dev git unzip zlib1g-dev \
+    default-mysql-client \
  && rm -rf /var/lib/apt/lists/*
 
 # Installation des extensions PHP
@@ -10,10 +11,9 @@ RUN docker-php-ext-install pdo pdo_mysql \
  && docker-php-ext-configure intl \
  && docker-php-ext-install intl
 
-# Configuration Apache: rewrite + docroot /public
+# Configuration Apache
 RUN a2enmod rewrite
 
-# CONFIGURATION APACHE CORRIGÉE
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     \n\
@@ -47,8 +47,6 @@ RUN printf '\nLimitRequestBody 262144000\n' >> /etc/apache2/apache2.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Définition du répertoire de travail
 WORKDIR /var/www/html
 
-# Démarrage via le script d'entrée
 CMD ["/entrypoint.sh"]
