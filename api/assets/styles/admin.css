@@ -1,19 +1,25 @@
 /* ====== LE21 • Thème EasyAdmin (override fort) ====== */
 /* Palette */
 :root {
-  --le21-bg-grad: linear-gradient(90deg,#2c5247 7%,#0f3426 35%,#0c291e 68%,#091f16 100%);
-  --le21-bg:       #091f16;
-  --le21-ink:      #0f3426;
-  --le21-ink-soft: #2c5247;
+    --le21-bg-grad: linear-gradient(
+        90deg,
+        #2c5247 7%,
+        #0f3426 35%,
+        #0c291e 68%,
+        #091f16 100%
+    );
+    --le21-bg: #091f16;
+    --le21-ink: #0f3426;
+    --le21-ink-soft: #2c5247;
 
-  --le21-text:     #F7F0BA; /* lemon chiffon */
-  --le21-text-2:   #BE9E66; /* accent doré */
-  --le21-text-3:   #0f3426; /* accent foncé */
-  --le21-surface:  #F7F0BA; /* surfaces très claires, en voile */
-  --le21-gold:     #BE9E66;
-  --le21-brown:    #574D29;
-  --le21-moss:     #918D6D;
-  --tb-border:      #574D29;
+    --le21-text: #f7f0ba; /* lemon chiffon */
+    --le21-text-2: #be9e66; /* accent doré */
+    --le21-text-3: #0f3426; /* accent foncé */
+    --le21-surface: #f7f0ba; /* surfaces très claires, en voile */
+    --le21-gold: #be9e66;
+    --le21-brown: #574d29;
+    --le21-moss: #918d6d;
+    --tb-border: #574d29;
 }
 
 /* ───── squeeze : on cible les classes EasyAdmin pour gagner la priorité ───── */
@@ -22,236 +28,319 @@
 body,
 body.ea-dark,
 body.ea-light {
-  background: var(--le21-bg-grad) !important;
-  color: var(--le21-text) !important;
+    background: var(--le21-bg-grad) !important;
+    color: var(--le21-text) !important;
 }
 
 /* barre haute */
 body .main-header.navbar {
-  background: var(--le21-bg-grad) !important;
-  border-bottom: 1px solid color-mix(in oklab, var(--le21-gold), #000 70%) !important;
+    background: var(--le21-bg-grad) !important;
+    border-bottom: 1px solid color-mix(in oklab, var(--le21-gold), #000 70%) !important;
 }
 /*header tableau*/
-body .content-top { background: transparent !important; }
-    .content-header {
-        align-items: flex-start;
-        background: var(--le21-bg);}
+body .content-top {
+    background: transparent !important;
+}
+.content-header {
+    align-items: flex-start;
+    background: var(--le21-bg);
+}
 
 /* sidebar */
 body .sidebar,
 body .sidebar .content {
-  background: linear-gradient(180deg,#0f3426 0%,#0c291e 50%,#091f16 100%) !important;
-  border-right: var(--le21-gold) !important;
+    background: linear-gradient(
+        180deg,
+        #0f3426 0%,
+        #0c291e 50%,
+        #091f16 100%
+    ) !important;
+    border-right: var(--le21-gold) !important;
 }
-body .sidebar .menu { border-right: 1px solid color-mix(in oklab, var(--le21-gold), #000 80%) !important; }
+body .sidebar .menu {
+    border-right: 1px solid color-mix(in oklab, var(--le21-gold), #000 80%) !important;
+}
 
 body .sidebar .menu .menu-item a {
-  color: var(--le21-text) !important;
-  border-radius: 10px !important;
+    color: var(--le21-text) !important;
+    border-radius: 10px !important;
 }
 body .sidebar .menu .menu-item a:hover,
 body .sidebar .menu .menu-item.active > a {
-  background: color-mix(in oklab, var(--le21-gold), transparent 85%) !important;
-  color: var(--le21-text-3) !important;
+    background: color-mix(
+        in oklab,
+        var(--le21-gold),
+        transparent 85%
+    ) !important;
+    color: var(--le21-text-3) !important;
 }
 body .sidebar .menu .menu-item .fa,
-body .sidebar .menu .menu-item svg { color: var(--le21-gold) !important; }
+body .sidebar .menu .menu-item svg {
+    color: var(--le21-gold) !important;
+}
 #main-menu .menu .menu-header {
-  color: var(--le21-text-2) !important;
+    color: var(--le21-text-2) !important;
 }
 
 /* panneaux / cartes / tableau */
 body .content-wrapper,
 body .content {
-  background: var(--le21-bg) !important;
+    background: var(--le21-bg) !important;
 }
 
 body .content-panel,
 body .card,
 body .ea-index .content-panel {
-  background:  var(--le21-surface) !important;
-  border: 1px solid  var(--le21-brown)!important;
-  box-shadow: 0 6px 18px rgba(0,0,0,.25) !important;
-  border-radius: 16px !important;
-  color: var(--le21-text2) !important;
+    background: var(--le21-surface) !important;
+    border: 1px solid var(--le21-brown) !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 16px !important;
+    color: var(--le21-text2) !important;
 }
-.datagrid thead+tbody tr td {
-  background: var(--le21-bg) !important; /* lignes du tableau */
+.datagrid thead + tbody tr td {
+    background: var(--le21-bg) !important; /* lignes du tableau */
 }
 
 /* titres */
 body .content-header-title,
 body .page-title,
 body .card-title,
-body h1, body h2, body h3 {
-  color: var(--le21-text) !important;
-  letter-spacing: .3px;
+body h1,
+body h2,
+body h3 {
+    color: var(--le21-text) !important;
+    letter-spacing: 0.3px;
 }
-body .content-header-title small { color: var(--le21-text-2) !important; }
+body .content-header-title small {
+    color: var(--le21-text-2) !important;
+}
 
 /* liens */
-body a { color: var(--le21-gold) !important; }
-body a:hover { color: #efd6a9 !important; }
+body a {
+    color: var(--le21-gold) !important;
+}
+body a:hover {
+    background-color: var(--le21-gold) !important;
+    color: var(--le21-bg) !important;
+}
 
+#main-menu .menu .menu-item.active {
+    background: var(--le21-surface) !important;
+}
 /* boutons */
 body .btn-primary {
-  background-image: linear-gradient(180deg,#caa879,#b7935c) !important;
-  border: 1px solid var(--le21-brown)!important;
-  color: #1b1b1b !important;
+    background-image: linear-gradient(180deg, #caa879, #b7935c) !important;
+    border: 1px solid var(--le21-brown) !important;
+    color: var(--le21-bg) !important;
 }
-body .btn-primary:hover { filter: brightness(1.04) saturate(1.02); }
+body .btn-primary:hover {
+    filter: brightness(1.04) saturate(1.02);
+}
 
 body .btn-secondary {
-  background:  var(--le21-ink-soft) !important;
-  border: 1px solid  var(--le21-ink-soft) !important;
-  color: var(--le21-surface) !important;
+    background: var(--le21-ink-soft) !important;
+    border: 1px solid var(--le21-ink-soft) !important;
+    color: var(--le21-surface) !important;
 }
-body .btn-danger  { background: linear-gradient(180deg,#b35656,#9c3f3f) !important; border: none !important; color:#fff !important; }
-body .btn-success { background: linear-gradient(180deg,#4f8a6d,#3b6e56) !important; border: none !important; color:#fff !important; }
+body .btn-danger {
+    background: linear-gradient(180deg, #b35656, #9c3f3f) !important;
+    border: none !important;
+    color: #fff !important;
+}
+body .btn-success {
+    background: linear-gradient(180deg, #4f8a6d, #3b6e56) !important;
+    border: none !important;
+    color: #fff !important;
+}
 
 /* tableaux */
-tbody{ background: var(--le21-bg);
-    --bs-table-bg: var(--le21-bg);}
+tbody {
+    background: var(--le21-bg);
+    --bs-table-bg: var(--le21-bg);
+}
 body .table {
-  background:  var(--le21-bg) !important;
-  color: var(--le21-text) !important;
-  border-color: var(--tbl-border) !important;
+    background: var(--le21-bg) !important;
+    color: var(--le21-text) !important;
+    border-color: var(--tbl-border) !important;
 }
 body .table thead th {
-  color: var(--le21-text-2) !important;
-  background:  var(--le21-bg-) !important;
-  border-bottom: 1px solid var(--tbl-border) !important;
+    color: var(--le21-text-2) !important;
+    background: var(--le21-bg-) !important;
+    border-bottom: 1px solid var(--tbl-border) !important;
 }
 body .table tbody tr {
-  background:  var(--le21-bg) !important;
-  border-color: var(--tbl-border) !important;
+    background: var(--le21-bg) !important;
+    border-color: var(--tbl-border) !important;
 }
 body .table tbody tr:hover {
-  background:  var(--le21-ink) !important;
+    background: var(--le21-ink) !important;
 }
-.datagrid thead a, .datagrid thead span:not(.icon) {
-    color: var(--le21-text-2);   
+.datagrid thead a,
+.datagrid thead span:not(.icon) {
+    color: var(--le21-text-2);
 }
-.table>:not(caption)>*>* {
-    color: var(--le21-text);}
+.table > :not(caption) > * > * {
+    color: var(--le21-text);
+}
 .datagrid thead .sorted.asc:after {
-    border-bottom-color: var(--le21-moss);}
+    border-bottom-color: var(--le21-moss);
+}
 
 /* miniatures */
 body .ea-lightbox-thumbnail img,
 body .field-image img,
 body .table .image img {
-  border-radius: 8px !important;
-  border: 1px solid var(--le21-brown) !important;
-  box-shadow: 0 6px 16px rgba(0,0,0,.35) !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--le21-brown) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
 }
-
-
 
 /* formulaires */
-body .form-control, body .form-select {
-  background:  var(--le21-surface) !important;
-  color: var(--le21-text) !important;
-  border: 1px solid  var(--le21-brown) !important;
-  border-radius: 10px !important;
+body .form-control,
+body .form-select {
+    background: var(--le21-surface) !important;
+    color: var(--le21-text) !important;
+    border: 1px solid var(--le21-brown) !important;
+    border-radius: 10px !important;
 }
-body .form-control:focus, body .form-select:focus {
-  border-color: var(--le21-gold) !important;
-  box-shadow: 0 0 0 2px  var(--le21-gold) !important;
+body .form-control:focus,
+body .form-select:focus {
+    border-color: var(--le21-gold) !important;
+    box-shadow: 0 0 0 2px var(--le21-gold) !important;
 }
-body .form-help { color: var(--le21-text-2) !important; }
-.input-group-text{
-  background-color: var(--le21-gold) !important;
-  border: none !important;
+body .form-help {
+    color: var(--le21-text-2) !important;
+}
+.input-group-text {
+    background-color: var(--le21-gold) !important;
+    border: none !important;
 }
 
 /* switch */
 body .form-switch .form-check-input {
-  background-color:  var(--le21-ink-soft) !important;
-  border-color: color-mix(in oklab, var(--le21-ink-soft), transparent 30%) !important;
+    background-color: var(--le21-ink-soft) !important;
+    border-color: color-mix(
+        in oklab,
+        var(--le21-ink-soft),
+        transparent 30%
+    ) !important;
 }
 body .form-switch .form-check-input:checked {
-  background-color: var(--le21-gold) !important;
-  border-color: color-mix(in oklab, var(--le21-brown), transparent 30%) !important;
+    background-color: var(--le21-gold) !important;
+    border-color: color-mix(
+        in oklab,
+        var(--le21-brown),
+        transparent 30%
+    ) !important;
 }
 
 /* pagination */
 body .pagination .page-link {
-  background: color-mix(in oklab, var(--le21-ink), transparent 60%) !important;
-  border: 1px solid color-mix(in oklab, var(--le21-ink-soft), #000 50%) !important;
-  color: var(--le21-text) !important;
+    background: color-mix(
+        in oklab,
+        var(--le21-ink),
+        transparent 60%
+    ) !important;
+    border: 1px solid color-mix(in oklab, var(--le21-ink-soft), #000 50%) !important;
+    color: var(--le21-text) !important;
 }
 body .pagination .page-item.active .page-link {
-  background: var(--le21-gold) !important;
-  color: #1b1b1b !important;
-  border-color: color-mix(in oklab, var(--le21-brown), transparent 40%) !important;
+    background: var(--le21-gold) !important;
+    color: #1b1b1b !important;
+    border-color: color-mix(
+        in oklab,
+        var(--le21-brown),
+        transparent 40%
+    ) !important;
 }
-.list-pagination-counter{
+.list-pagination-counter {
     color: var(--le21-text) !important  ;
 }
 
-
-
 /* alerts / badges */
 body .alert {
-  border-radius: 12px !important;
-  border: 1px solid color-mix(in oklab, var(--le21-brown), transparent 60%) !important;
-  color: var(--le21-text) !important;
+    border-radius: 12px !important;
+    border: 1px solid color-mix(in oklab, var(--le21-brown), transparent 60%) !important;
+    color: var(--le21-text) !important;
 }
-body .alert-success { background: color-mix(in oklab,#3e7a5e,transparent 55%) !important; }
-body .alert-info    { background: color-mix(in oklab,var(--le21-gold),transparent 70%) !important; color:#1b1b1b !important; }
-body .alert-warning { background: color-mix(in oklab,#b78f39,transparent 60%) !important; color:#1b1b1b !important; }
-body .alert-danger  { background: color-mix(in oklab,#a34545,transparent 50%) !important; }
+body .alert-success {
+    background: color-mix(in oklab, #3e7a5e, transparent 55%) !important;
+}
+body .alert-info {
+    background: color-mix(
+        in oklab,
+        var(--le21-gold),
+        transparent 70%
+    ) !important;
+    color: #1b1b1b !important;
+}
+body .alert-warning {
+    background: color-mix(in oklab, #b78f39, transparent 60%) !important;
+    color: #1b1b1b !important;
+}
+body .alert-danger {
+    background: color-mix(in oklab, #a34545, transparent 50%) !important;
+}
 
 body .badge-primary,
 body .badge-info {
-  background: color-mix(in oklab, var(--le21-gold), transparent 20%) !important;
-  color: #1b1b1b !important;
+    background: color-mix(
+        in oklab,
+        var(--le21-gold),
+        transparent 20%
+    ) !important;
+    color: #1b1b1b !important;
 }
 /*Formulaires arcticles*/
-body .form-control, body .form-select{
-  background:  var(--le21-ink-soft) !important;
-  color: var(--le21-text) !important;
-  border: 1px solid  var(--le21-brown) !important;
-  border-radius: 10px !important;
+body .form-control,
+body .form-select {
+    background: var(--le21-ink-soft) !important;
+    color: var(--le21-text) !important;
+    border: 1px solid var(--le21-brown) !important;
+    border-radius: 10px !important;
 }
-.trix-content *{
-  color: var(--le21-text-3) !important;
+.trix-content * {
+    color: var(--le21-text-3) !important;
 }
-.form-group label{
-  color: var(--le21-text) !important;
+.form-group label {
+    color: var(--le21-text) !important;
 }
 .field-association .action-new,
 .ea-autocomplete .action-new {
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
-.form-group label, .form-group legend.col-form-label{
-  color: var(--le21-text) !important;
+.form-group label,
+.form-group legend.col-form-label {
+    color: var(--le21-text) !important;
 }
 .ts-wrapper.form-select:not(.disabled) .ts-control {
-  background:  var(--le21-bg) !important;
-  color: var(--le21-text) !important;
-  border: 1px solid  var(--le21-brown) !important;
-  border-radius: 10px !important;}
+    background: var(--le21-bg) !important;
+    color: var(--le21-text) !important;
+    border: 1px solid var(--le21-brown) !important;
+    border-radius: 10px !important;
+}
 
 /* Avoid clipping the button */
-.field-association, .ea-autocomplete {
-  overflow: visible !important;
+.field-association,
+.ea-autocomplete {
+    overflow: visible !important;
 }
 
 /* login (si utilisé) */
-body .login-wrapper { background: var(--le21-bg-grad) !important; }
+body .login-wrapper {
+    background: var(--le21-bg-grad) !important;
+}
 body .login .content {
-  background:  var(--le21-surface) !important;
-  border: 1px solid color-mix(in oklab, var(--le21-brown), transparent 70%) !important;
-  border-radius: 16px !important;
-  color: var(--le21-text) !important;
+    background: var(--le21-surface) !important;
+    border: 1px solid color-mix(in oklab, var(--le21-brown), transparent 70%) !important;
+    border-radius: 16px !important;
+    color: var(--le21-text) !important;
 }
 /* Responsive - mobile */
 @media (max-width: 767px) {
     table.datagrid:not(.datagrid-empty) td:before {
-              color: var(--le21-text) !important;
+        color: var(--le21-text) !important;
     }
-  }
+}
