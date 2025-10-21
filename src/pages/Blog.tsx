@@ -17,6 +17,19 @@ type ArticleBlog = {
 export default function Blog() {
   const [articles, setArticles] = useState<ArticleBlog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Détecter la taille d'écran
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(window.innerWidth <= 750 ? 3 : 5);
+    };
+
+    handleResize(); // Initial
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     let cancel = false;
@@ -67,6 +80,17 @@ export default function Blog() {
     return () => { cancel = true; };
   }, []);
 
+  // Calculer les articles à afficher
+  const indexOfLastArticle = currentPage * itemsPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - itemsPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  const totalPages = Math.ceil(articles.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (loading) {
     return <div className="blog-loading">Chargement des articles...</div>;
   }
@@ -82,10 +106,8 @@ export default function Blog() {
 
   return (
     <div className="blog-container">
-
-      
       <div className="articles-list">
-        {articles.map((article, index) => (
+        {currentArticles.map((article, index) => (
           <div key={article.id}>
             <Link to={`/blog/${article.id}`} className="article-card">
               {/* Séparateur décoratif coin */}
@@ -130,7 +152,7 @@ export default function Blog() {
             </Link>
 
             {/* Séparateur entre articles */}
-            {index < articles.length - 1 && (
+            {index < currentArticles.length - 1 && (
               <div className="separator-horizontal">
                 <img 
                   src={`${API}/images/separateur.png`}
@@ -141,6 +163,39 @@ export default function Blog() {
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-btn"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            ← 
+          </button>
+
+          <div className="pagination-numbers">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                className={`pagination-number ${currentPage === page ? 'active' : ''}`}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="pagination-btn"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+             →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

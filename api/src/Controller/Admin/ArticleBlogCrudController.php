@@ -99,9 +99,10 @@ class ArticleBlogCrudController extends AbstractCrudController
             ->setFormTypeOptions([
                 'mapped'   => false,
                 'required' => false,
+                'empty_data' => 'image',
             ])
             ->onlyOnForms();
-
+       
         // --- Auteur
         yield AssociationField::new('auteur', 'Tatoueur')
             ->autocomplete();
@@ -203,7 +204,7 @@ class ArticleBlogCrudController extends AbstractCrudController
 
         $article->setMedia($media);
     }
-
+    
     private function deepFindUploadedFile(mixed $haystack, string $key): ?UploadedFile
     {
         if (is_array($haystack)) {

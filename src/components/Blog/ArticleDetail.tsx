@@ -84,8 +84,6 @@ export default function ArticleDetail() {
           )}
           
           <div className="article-header-overlay">
-            <h1 className="article-detail-title">{article.titre}</h1>
-            
             <div className="article-detail-meta">
               <span className="article-detail-author">
                 Par {article.auteur?.pseudo || 'Anonyme'}
@@ -99,6 +97,7 @@ export default function ArticleDetail() {
               </span>
             </div>
           </div>
+           <h1 className="article-detail-title">{article.titre}</h1>
         </div>
 
         {/* Séparateur décoratif */}

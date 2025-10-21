@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Footer from './components/Footer';
+import Footer from './Footer/Footer';
 import Acceuil from './pages/Acceuil';
 import Blog from './pages/Blog';
 import ArticleDetail from './components/Blog/ArticleDetail';
 import Flash from './pages/Flash';
 import Contact from './pages/Contact';
+import MentionsLegales from './Footer/MentionsLegales';
 // ... autres imports
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<ArticleDetail />} />
             <Route path="/contact" element={<Contact />} />
-            
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
           </Routes>
         </main>
         

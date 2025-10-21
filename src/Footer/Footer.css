@@ -1,3 +1,4 @@
+
 /* Footer principal - Fond dégradé sombre */
 .main-footer {
   background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
@@ -386,6 +387,11 @@
 
   .footer-bottom {
     padding: 10px;
+  }
+  .footer-sections-group {
+    gap: 20px;
+    align-items: center;
+    max-width: none;
   }
   .footer-sections-group .footer-section{
     min-width: 200px;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Contact.css';
 
 const API = import.meta.env.VITE_API_URL as string;
@@ -21,7 +22,8 @@ export default function Contact() {
     telephone: '',
     sujet: '',
     message: '',
-    tatoueur: ''
+    tatoueur: '',
+    rgpdAccepted: false
   });
 
   useEffect(() => {
@@ -39,14 +41,23 @@ export default function Contact() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.rgpdAccepted) {
+      setError('Vous devez accepter la politique de confidentialité');
+      return;
+    }
+    
     setLoading(true);
     setError('');
     setSuccess(false);
@@ -78,7 +89,8 @@ export default function Contact() {
         telephone: '',
         sujet: '',
         message: '',
-        tatoueur: ''
+        tatoueur: '',
+        rgpdAccepted: false
       });
     } catch (err: any) {
       setError(err.message || 'Une erreur est survenue');
@@ -190,9 +202,30 @@ export default function Contact() {
                 rows={6}
               />
             </div>
+
+            {/* RGPD Checkbox */}
+            <div className="form-group-checkbox">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="rgpdAccepted"
+                  checked={formData.rgpdAccepted}
+                  onChange={handleChange}
+                  required
+                />
+                <span className="checkbox-text">
+                  J'accepte que mes données soient utilisées dans le cadre de ma demande. 
+                  Consultez notre{' '}
+                  <Link to="/mentions-legales" className="rgpd-link">
+                    politique de confidentialité
+                  </Link>
+                  {' '}pour plus d'informations.
+                </span>
+              </label>
+            </div>
           </div>
 
-          <button type="submit" className="submit-btn" disabled={loading}>
+          <button type="submit" className="submit-btn" disabled={loading || !formData.rgpdAccepted}>
             {loading ? 'Envoi en cours...' : 'Envoyer'}
           </button>
         </form>

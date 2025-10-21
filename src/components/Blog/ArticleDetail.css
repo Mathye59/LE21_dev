@@ -1,5 +1,5 @@
 .article-detail-container {
-  width: 100%;
+  width: 90%;
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px 80px;
@@ -26,10 +26,9 @@
   margin-bottom: 30px;
   color: #f7f0ba;
   text-decoration: none;
-  border: 1px solid rgba(247, 240, 186, 0.3);
-  border-radius: 5px;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
+  font-family: 'Tangerine';
+  font-size: 2rem;
 }
 
 .back-link:hover {
@@ -70,11 +69,20 @@
 }
 
 .article-detail-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: #f7f0ba;
-  margin: 0 0 20px;
-  letter-spacing: 1px;
+  margin-bottom: 30px;
+  color: #574d29; /* texte foncé */
+  font-size: 4rem;
+  font-family: 'Tangerine', cursive;
+  font-style: italic;
+  font-weight: bold;
+  background: -webkit-linear-gradient(90deg,rgba(87, 77, 41, 1) 0%, rgba(247, 240, 186, 1) 32%, rgba(87, 77, 41, 1) 67%, rgba(247, 240, 186, 1) 100%);
+  /* Chrome, Edge, Safari */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Firefox */
+  background-clip: text;
+  color: transparent;
+  margin-top: 5px;
 }
 
 .article-detail-meta {

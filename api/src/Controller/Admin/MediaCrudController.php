@@ -41,7 +41,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Count;
@@ -122,12 +122,18 @@ final class MediaCrudController extends AbstractCrudController
         }
 
         // =====================================================================
-        // 3) Champs communs (INDEX/DETAIL) : aperçu + date
+        // 3) Champs communs (INDEX/DETAIL) : aperçu + date + alt
         // =====================================================================
         yield ImageField::new('filename', 'Aperçu')
             ->setBasePath('/uploads/media') // [ASSET] doit matcher uri_prefix du mapping Vich
             ->hideOnForm();                 // [UX] lecture seule en back-office
-
+        
+        yield TextField::new('alt', 'Texte alternatif')
+            ->setFormTypeOptions([
+                // si l’utilisateur laisse le champ vide, “image” sera persisté
+                'empty_data' => 'image',
+            ]);
+            
         yield DateField::new('date', 'Date')
             ->hideOnForm();                 // [DX] si gérée en PrePersist/PreUpdate côté entité
     }

@@ -6,10 +6,20 @@
   margin-top: 30px;
 }
 h2, h3, h4 {
-  font-family: 'Tangerine', serif;
-  margin-bottom: 20px;
-  text-align: center    ;
-  font-size: 3rem;
+   margin-bottom: 30px;
+  color: #574d29; /* texte foncé */
+  font-size: 4rem;
+  font-family: 'Tangerine', cursive;
+  font-style: italic;
+  font-weight: bold;
+  background: -webkit-linear-gradient(85deg,rgba(87, 77, 41, 1) 0%, rgba(247, 240, 186, 1) 32%, rgba(87, 77, 41, 1) 67%, rgba(247, 240, 186, 1) 100%);
+  /* Chrome, Edge, Safari */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Firefox */
+  background-clip: text;
+  color: transparent;
+  margin-top: 5px;
 }
 /* Section Hero */
 .hero-section {

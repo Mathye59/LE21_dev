@@ -9,22 +9,6 @@
   overflow: hidden;
 }
 
-/* Motif floral décoratif à droite */
-.contact-container::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  background-image: url('https://raw.githubusercontent.com/your-repo/floral-pattern.svg');
-  background-repeat: repeat-y;
-  background-size: contain;
-  opacity: 0.6;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .contact-wrap {
   position: relative;
   width: 100%;
@@ -38,7 +22,6 @@
 
 .contact-title {
   font-family: 'Playfair Display', serif;
-
   color: #f7f0ba;
   text-align: center;
   margin-bottom: 50px;
@@ -46,7 +29,6 @@
   text-transform: uppercase;
 }
 
-/* Coin décoratif */
 .separator-corner-contact {
   position: absolute;
   top: -10px;
@@ -90,14 +72,13 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 25px;
-  
-}
- .form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
 .form-group {
   display: flex;
@@ -148,6 +129,48 @@
   font-family: inherit;
 }
 
+/* RGPD Checkbox */
+.form-group-checkbox {
+  margin-top: 10px;
+  padding: 15px;
+  background: rgba(247, 240, 186, 0.03);
+  border: 1px solid rgba(247, 240, 186, 0.2);
+  border-radius: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  color: rgba(247, 240, 186, 0.85);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.checkbox-label input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  cursor: pointer;
+  accent-color: #BE9E66;
+}
+
+.checkbox-text {
+  flex: 1;
+}
+
+.rgpd-link {
+  color: #BE9E66;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.rgpd-link:hover {
+  color: #F7F0BA;
+}
+
 /* Bouton submit */
 .submit-btn {
   padding: 15px 40px;
@@ -176,8 +199,8 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-input:-internal-autofill-selected
-{
+
+input:-internal-autofill-selected {
   background-color: rgba(255, 255, 255, 0.05) !important;
   background-image: none !important;
   color: #f7f0ba !important;
@@ -191,13 +214,16 @@ input:-internal-autofill-selected
   }
 
   .form-row {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 15px;
   }
 
   .separator-corner-contact {
     width: 60px;
     height: 60px;
+  }
+
+  .checkbox-label {
+    font-size: 0.85rem;
   }
 }
 
@@ -222,5 +248,19 @@ input:-internal-autofill-selected
   .separator-corner-contact {
     width: 50px;
     height: 50px;
+  }
+
+  .form-group-checkbox {
+    padding: 12px;
+  }
+
+  .checkbox-label {
+    font-size: 0.8rem;
+    gap: 10px;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
   }
 }

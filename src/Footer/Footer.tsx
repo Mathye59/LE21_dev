@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import "./Footer.css";
+import { Link } from "react-router-dom";
 
 // URL de l'API définie dans les variables d'environnement
 const API = import.meta.env.VITE_API_URL as string;
@@ -229,7 +230,7 @@ export default function Footer() {
         {/* Footer bottom - Copyright */}
         <div className="footer-bottom">
           <div className="footer-separator"></div>
-          <p>&copy; {new Date().getFullYear()} {entreprise?.nom || "Le 21 Tattoo & Piercing"}. Tous droits réservés.</p>
+          <p>&copy; {new Date().getFullYear()} {entreprise?.nom || "Le 21 Tattoo & Piercing"}. Tous droits réservés.</p>  <Link to="/mentions-legales">Mentions Légales & RGPD</Link>
         </div>
       </footer>
     </>
