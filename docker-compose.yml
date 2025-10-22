@@ -16,6 +16,7 @@ services:
       retries: 20
     volumes:
       - dbdata:/var/lib/mysql
+      - ./backups:/docker-entrypoint-initdb.d:ro
 
 
   api:
@@ -37,7 +38,6 @@ services:
         - "8080:80"   
       volumes:
         - ./api:/var/www/html   #  monte le code en bash (Entity visible dans le conteneur)
-        - ./backups:/backup:ro  #  monte le dossier de backup en lecture seule
 
 
   front:
