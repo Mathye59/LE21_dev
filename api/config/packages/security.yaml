@@ -45,7 +45,7 @@ security:
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_USER }            # Admin nécessite connexion
-        - { path: ^/, roles: ROLE_USER }                 # Reste du site nécessite connexion
+        - { path: ^/, roles: ROLE_USER }                 # Reste du Back nécessite connexion
          
 when@test:
     security:

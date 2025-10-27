@@ -14,30 +14,25 @@ use ApiPlatform\Metadata\ApiResource;
 #[ORM\HasLifecycleCallbacks]
 class ArticleBlog
 {
-    // --- Identité -----------------------------------------------------------
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // --- Données de contenu -------------------------------------------------
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $contenu = null;
 
-    /**
-     * Résumé court (affiché dans les listes/teasers).
-     * Nullable : s’il est vide, il sera auto-généré à partir de "contenu".
-     */
+
+    //Résumé court nullable : s’il est vide, il sera auto-généré à partir de "contenu".
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => 'Résumé court de l’article'])]
     private ?string $resume = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $date = null;
 
-    // --- Relations ----------------------------------------------------------
     #[ORM\ManyToOne(inversedBy: 'articleBlogs')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Tatoueur $auteur = null;
@@ -184,9 +179,8 @@ class ArticleBlog
     public function setDateIfEmpty(): void
     {
         if ($this->date === null) {
-            // Choisis le fuseau si tu veux, ex. 'Europe/Paris'
-            $this->date = new \DateTime(); 
-            // $this->date = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+
+            $this->date = new \DateTime();
         }
     }
 }

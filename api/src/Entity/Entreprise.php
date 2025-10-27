@@ -7,11 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Patch;
-
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
@@ -83,7 +78,7 @@ class Entreprise
     #[Groups(['entreprise:write'])]
     private ?File $logoFile = null;
 
-   
+
 
     // Timestamp pour déclencher Vich en cas d’upload
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
@@ -114,40 +109,120 @@ class Entreprise
 
     // ——— Getters/Setters ———
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getSingletonKey(): string { return $this->singletonKey; }
-    public function setSingletonKey(string $k): self { $this->singletonKey = $k; return $this; }
+    public function getSingletonKey(): string
+    {
+        return $this->singletonKey;
+    }
+    public function setSingletonKey(string $k): self
+    {
+        $this->singletonKey = $k;
+        return $this;
+    }
 
-    public function getNom(): ?string { return $this->nom; }
-    public function setNom(string $nom): self { $this->nom = $nom; return $this; }
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+        return $this;
+    }
 
-    public function getAdresse(): ?string { return $this->adresse; }
-    public function setAdresse(string $adresse): self { $this->adresse = $adresse; return $this; }
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+    public function setAdresse(string $adresse): self
+    {
+        $this->adresse = $adresse;
+        return $this;
+    }
 
-    public function getFacebook(): ?string { return $this->facebook; }
-    public function setFacebook(?string $facebook): self { $this->facebook = $facebook; return $this; }
+    public function getFacebook(): ?string
+    {
+        return $this->facebook;
+    }
+    public function setFacebook(?string $facebook): self
+    {
+        $this->facebook = $facebook;
+        return $this;
+    }
 
-    public function getInstagram(): ?string { return $this->instagram; }
-    public function setInstagram(?string $instagram): self { $this->instagram = $instagram; return $this; }
+    public function getInstagram(): ?string
+    {
+        return $this->instagram;
+    }
+    public function setInstagram(?string $instagram): self
+    {
+        $this->instagram = $instagram;
+        return $this;
+    }
 
-    public function getHorairesOuverture(): ?string { return $this->horairesOuverture; }
-    public function setHorairesOuverture(?string $horairesOuverture): self { $this->horairesOuverture = $horairesOuverture; return $this; }
+    public function getHorairesOuverture(): ?string
+    {
+        return $this->horairesOuverture;
+    }
+    public function setHorairesOuverture(?string $horairesOuverture): self
+    {
+        $this->horairesOuverture = $horairesOuverture;
+        return $this;
+    }
 
-    public function getHorairesFermeture(): ?string { return $this->horairesFermeture; }
-    public function setHorairesFermeture(string $horairesFermeture): self { $this->horairesFermeture = $horairesFermeture; return $this; }
+    public function getHorairesFermeture(): ?string
+    {
+        return $this->horairesFermeture;
+    }
+    public function setHorairesFermeture(string $horairesFermeture): self
+    {
+        $this->horairesFermeture = $horairesFermeture;
+        return $this;
+    }
 
-    public function getHorairePlus(): ?string { return $this->horairePlus; }
-    public function setHorairePlus(?string $horairePlus): self { $this->horairePlus = $horairePlus; return $this; }
+    public function getHorairePlus(): ?string
+    {
+        return $this->horairePlus;
+    }
+    public function setHorairePlus(?string $horairePlus): self
+    {
+        $this->horairePlus = $horairePlus;
+        return $this;
+    }
 
-    public function getTelephone(): ?string { return $this->telephone; }
-    public function setTelephone(?string $telephone): self { $this->telephone = $telephone; return $this; }
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+    public function setTelephone(?string $telephone): self
+    {
+        $this->telephone = $telephone;
+        return $this;
+    }
 
-    public function getEmail(): ?string { return $this->email; }
-    public function setEmail(string $email): self { $this->email = $email; return $this; }
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+        return $this;
+    }
 
-    public function getLogoName(): ?string { return $this->logoName; }
-    public function setLogoName(?string $name): self { $this->logoName = $name; return $this; }
+    public function getLogoName(): ?string
+    {
+        return $this->logoName;
+    }
+    public function setLogoName(?string $name): self
+    {
+        $this->logoName = $name;
+        return $this;
+    }
 
     public function setLogoFile(?File $file): void
     {
@@ -157,15 +232,28 @@ class Entreprise
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
-    public function getLogoFile(): ?File { return $this->logoFile; }
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
+    }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $t): self { $this->updatedAt = $t; return $this; }
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+    public function setUpdatedAt(?\DateTimeImmutable $t): self
+    {
+        $this->updatedAt = $t;
+        return $this;
+    }
 
     /**
      * @return Collection<int, Tatoueur>
      */
-    public function getTatoueurs(): Collection { return $this->tatoueurs; }
+    public function getTatoueurs(): Collection
+    {
+        return $this->tatoueurs;
+    }
 
     public function addTatoueur(Tatoueur $tatoueur): self
     {

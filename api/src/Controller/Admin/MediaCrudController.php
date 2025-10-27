@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ==========================================================
  *  MediaCrudController (EasyAdmin)
@@ -10,15 +11,6 @@
  *       (b) upload multiple non mappé (champ 'files[]') pour l'import en masse.
  *   - Laisser VichUploaderBundle déplacer le fichier et renseigner 'filename'.
  *   - Laisser un SUBSCRIBER Doctrine (mentionné) gérer la création/synchro Carrousel.
- *
- *  Hypothèses modèle & config :
- *   - Entité Media :
- *       * propriété 'file' (non mappée Doctrine) annotée @Vich\UploadableField(..., fileNameProperty="filename")
- *       * propriété 'filename' (string) persistée en BDD.
- *       * propriété 'date' (DateTimeImmutable ?), remplie par défaut (ex: PrePersist).
- *   - vich_uploader.yaml :
- *       * mapping "media" (ou équivalent) avec upload_destination '%kernel.project_dir%/public/uploads/media'
- *       * uri_prefix '/uploads/media'
  *
  *  Points d’attention :
  *   - [UPLOAD] Limites PHP ini (upload_max_filesize / post_max_size) > tailles de constraints.
@@ -96,7 +88,7 @@ final class MediaCrudController extends AbstractCrudController
                     'mapped'     => false, // [DX] indispensable : on récupère depuis la Request
                     'required'   => false,
                     // [SECURITY] & [UPLOAD] Constraints côté serveur (mime, taille, nombre)
-                    'constraints'=> [
+                    'constraints' => [
                         new Count([
                             'max' => 10,
                             'maxMessage' => '10 fichiers maximum par import.',
@@ -127,13 +119,13 @@ final class MediaCrudController extends AbstractCrudController
         yield ImageField::new('filename', 'Aperçu')
             ->setBasePath('/uploads/media') // [ASSET] doit matcher uri_prefix du mapping Vich
             ->hideOnForm();                 // [UX] lecture seule en back-office
-        
+
         yield TextField::new('alt', 'Texte alternatif')
             ->setFormTypeOptions([
                 // si l’utilisateur laisse le champ vide, “image” sera persisté
                 'empty_data' => 'image',
             ]);
-            
+
         yield DateField::new('date', 'Date')
             ->hideOnForm();                 // [DX] si gérée en PrePersist/PreUpdate côté entité
     }
@@ -145,19 +137,29 @@ final class MediaCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->update(Crud::PAGE_INDEX, Action::NEW,
+            ->update(
+                Crud::PAGE_INDEX,
+                Action::NEW,
                 fn(Action $a) => $a->setLabel('Nouveau média')->setIcon('fa fa-plus')
             )
-            ->update(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER,
+            ->update(
+                Crud::PAGE_NEW,
+                Action::SAVE_AND_ADD_ANOTHER,
                 fn(Action $a) => $a->setLabel('Enregistrer et ajouter un autre')->setIcon('fa fa-plus-circle')
             )
-            ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN,
+            ->update(
+                Crud::PAGE_NEW,
+                Action::SAVE_AND_RETURN,
                 fn(Action $a) => $a->setLabel('Enregistrer et revenir')->setIcon('fa fa-check')
             )
-            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE,
+            ->update(
+                Crud::PAGE_EDIT,
+                Action::SAVE_AND_CONTINUE,
                 fn(Action $a) => $a->setLabel('Enregistrer et continuer')->setIcon('fa fa-save')
             )
-            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN,
+            ->update(
+                Crud::PAGE_EDIT,
+                Action::SAVE_AND_RETURN,
                 fn(Action $a) => $a->setLabel('Enregistrer et revenir')->setIcon('fa fa-check')
             );
     }
@@ -188,7 +190,9 @@ final class MediaCrudController extends AbstractCrudController
             $imported = 0;
 
             foreach ($files as $uploaded) {
-                if (!$uploaded) { continue; } // robuste aux trous dans le tableau
+                if (!$uploaded) {
+                    continue;
+                } // robuste aux trous dans le tableau
 
                 $m = new Media();
                 $m->setFile($uploaded); // [UPLOAD] Vich déplacera le fichier et alimentera 'filename'

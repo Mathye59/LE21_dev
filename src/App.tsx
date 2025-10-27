@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './Footer/Footer';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 import Acceuil from './pages/Acceuil';
 import Blog from './pages/Blog';
 import ArticleDetail from './components/Blog/ArticleDetail';
 import Flash from './pages/Flash';
 import Contact from './pages/Contact';
-import MentionsLegales from './Footer/MentionsLegales';
+import MentionsLegales from './components/Footer/MentionsLegales';
 // ... autres imports
 
 function App() {
@@ -14,8 +14,8 @@ function App() {
     <BrowserRouter>
       <div className="app-container">
         <Header />
-        
-         <main className="app-main">
+
+        <main className="app-main">
           <Routes>
             <Route path="/" element={<Acceuil />} />
             <Route path="/flash" element={<Flash />} />
@@ -25,7 +25,7 @@ function App() {
             <Route path="/mentions-legales" element={<MentionsLegales />} />
           </Routes>
         </main>
-        
+
         <Footer />
       </div>
     </BrowserRouter>
