@@ -123,7 +123,7 @@ final class MediaCrudController extends AbstractCrudController
         yield TextField::new('alt', 'Texte alternatif')
             ->setFormTypeOptions([
                 // si l’utilisateur laisse le champ vide, “image” sera persisté
-                'empty_data' => 'image',
+                'empty_data' => 'image indisponible',
             ]);
 
         yield DateField::new('date', 'Date')

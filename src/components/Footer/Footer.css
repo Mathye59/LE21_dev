@@ -1,4 +1,3 @@
-
 /* Footer principal - Fond dégradé sombre */
 .main-footer {
   background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
@@ -32,10 +31,10 @@
   margin: 0 auto;
   padding: 10px;
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
   align-items: flex-start;
-  justify-content: center; 
-  gap: 40px; 
+  justify-content: center;
+  gap: 40px;
   position: relative;
   z-index: 2;
   height: fit-content;
@@ -51,7 +50,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  flex-wrap: wrap;;
+  flex-wrap: wrap;
 }
 /* Les sections dans le groupe */
 .footer-sections-group .footer-section {
@@ -135,24 +134,27 @@
 
 /* Cache les horaires mobiles par défaut */
 .horaires-mobile-overlay {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(-100%);
-    width: 90%;
-    max-width: 450px;
-    background: linear-gradient(135deg, rgba(26, 26, 26, 0.98), rgba(13, 13, 13, 0.98));
-    backdrop-filter: blur(15px);
-    border: 2px solid #d4af37;
-    border-radius: 15px;
-    padding: 25px 30px;
-    text-align: center;
-    z-index: 100;
-    box-shadow: 0 -8px 40px rgba(212, 175, 55, 0.3);
-    animation: slideDown 0.3s ease-out;
-   
-  }
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  width: 90%;
+  max-width: 450px;
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 26, 0.98),
+    rgba(13, 13, 13, 0.98)
+  );
+  backdrop-filter: blur(15px);
+  border: 2px solid #d4af37;
+  border-radius: 15px;
+  padding: 25px 30px;
+  text-align: center;
+  z-index: 100;
+  box-shadow: 0 -8px 40px rgba(212, 175, 55, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -182,7 +184,6 @@
   font-size: 1rem;
   letter-spacing: 0.5px;
 }
-
 
 /* Titres des sections */
 .footer-section h4 {
@@ -244,7 +245,6 @@
   box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
-
 /* SVG à l'intérieur des boutons - TAILLE ADAPTATIVE */
 .follow-btn svg {
   width: clamp(16px, 1.8vw, 20px);
@@ -296,7 +296,8 @@
 
 /* Animation du séparateur */
 @keyframes footerGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
   }
   50% {
@@ -317,25 +318,24 @@
     gap: 30px;
     font-size: 15px;
   }
-  
+
   .horaires-desktop {
     display: none !important;
   }
-  
+
   .horaires-mobile-overlay {
     display: block;
   }
 
-   .horaires-mobile-overlay {
+  .horaires-mobile-overlay {
     width: 85%;
     padding: 20px 25px;
-    
   }
-  
+
   .horaires-overlay-title {
     font-size: 1.3rem;
   }
-  
+
   .horaires-overlay-info p {
     font-size: 0.9rem;
   }
@@ -343,7 +343,7 @@
   .footer-bottom {
     padding: 25px 30px;
   }
-  
+
   /* Active la popup sur tablette */
   .footer-logo-container {
     cursor: pointer;
@@ -389,12 +389,12 @@
     padding: 10px;
   }
   .footer-sections-group {
-    gap: 20px;
+    gap: 1px;
     align-items: center;
     max-width: none;
   }
-  .footer-sections-group .footer-section{
-    min-width: 200px;
+  .footer-sections-group .footer-section {
+    min-width: 150px;
   }
   .horaires-overlay-info p {
     font-size: 0.85rem;
@@ -421,12 +421,13 @@
     display: flex;
     align-items: center;
   }
-  
+
   .footer-content .size-footer {
     min-width: 150px;
-  
   }
-
+  .footer-sections-group .footer-section {
+    min-width: 200px;
+  }
   .logo-footer {
     width: 70%;
   }
@@ -438,11 +439,9 @@
     max-width: 320px;
     padding: 18px 20px;
   }
-  
+
   .horaires-overlay-title {
     font-size: 1.1rem;
     margin-bottom: 15px;
   }
-  
-  
 }
