@@ -18,33 +18,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * ==========================================================
- *  CarrouselCrudController
- * ----------------------------------------------------------
- *  Rôle :
- *   - Gérer la liste des entrées du carrousel (une entrée = un media + méta).
- *   - Afficher une vignette + nom de fichier du média lié.
- *   - Permettre d'activer/désactiver une entrée (toggle).
- *   - Permettre de réordonner via "Monter" / "Descendre".
- *
- *  Choix techniques :
- *   - On précharge l'association media en INDEX pour éviter le N+1.
- *   - Les actions "toggle" / "moveUp" / "moveDown" sont exposées via EasyAdmin.
- *   - Les actions d'écriture sont configurées en POST (+ CSRF géré par EA).
- *   - Le swap des positions utilise une "valeur tampon" (0) pour éviter
- *     toute collision avec une contrainte d'unicité sur `position`.
- *
- *  Hypothèses côté entité Carrousel :
- *   - Propriétés : media (ManyToOne vers Media), title (string|null),
- *                  isActive (bool), position (int).
- *   - positions contiguës (1..N). Si historique douteux → penser à renuméroter.
- *
- *  À vérifier côté BDD :
- *   - Index (et idéalement unicité) sur `position` (ou `(carrousel_id, position)` si multi-scopes).
- *   - Si unicité active et SGBD MySQL/MariaDB → la variante "tampon" est **indispensable**.
- * ==========================================================
- */
 class CarrouselCrudController extends AbstractCrudController
 {
     /** FQCN de l'entité gérée */
@@ -70,7 +43,6 @@ class CarrouselCrudController extends AbstractCrudController
     /**
      * Réglages globaux du CRUD :
      * - Labels, titres, tri par position ASC, pagination.
-     * - (Option) Permission stricte par rôle si besoin via setEntityPermission('ROLE_ADMIN')
      */
     public function configureCrud(Crud $crud): Crud
     {
@@ -78,16 +50,12 @@ class CarrouselCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Carrousel')
             ->setEntityLabelInSingular('Image du carrousel')
             ->setPageTitle(Crud::PAGE_INDEX, 'Carrousel')
-            ->setDefaultSort(['position' => 'ASC'])
+            ->setDefaultSort(['position' => 'DESC'])
             ->setPaginatorPageSize(15);
-        // ->setEntityPermission('ROLE_ADMIN'); // décommenter si réservé aux admins
     }
 
     /**
      * Déclaration des champs :
-     * - En INDEX : vignette (ImageField) + nom du fichier (TextField),
-     *              "Actif" (Boolean), "Position" (Integer lecture seule).
-     * - En FORM : titre (optionnel), actif (si souhaité), etc.
      */
     public function configureFields(string $pageName): iterable
     {

@@ -49,8 +49,8 @@ final class MediaCrudController extends AbstractCrudController
     }
 
     /**
-     * Réglages globaux EA : libellés, titres, pagination.
-     * [UX] Page "Nouveau" intitulée "Importer des médias" pour clarifier le lot.
+     * libellés, titres, pagination.
+     * Page "Nouveau" intitulée "Importer des médias" 
      */
     public function configureCrud(Crud $crud): Crud
     {
@@ -65,29 +65,28 @@ final class MediaCrudController extends AbstractCrudController
 
     /**
      * Déclaration des champs affichés selon la page (INDEX/NEW/EDIT).
-     * [UPLOAD] NEW : propose unitaire (Vich) + multiple (FileType non mappé).
-     * [UPLOAD] EDIT : propose remplacement unitaire (Vich).
-     * [UX] INDEX : aperçu + date (lecture seule).
+     * NEW : propose unitaire (Vich) + multiple (FileType non mappé).
+     * EDIT : propose remplacement unitaire (Vich).
+     * INDEX : aperçu + date (lecture seule).
      */
     public function configureFields(string $pageName): iterable
     {
-        // =====================================================================
-        // 1) PAGE NEW → 2 modes d'upload
-        // =====================================================================
+
+        //  PAGE NEW → 2 modes d'upload
         if ($pageName === Crud::PAGE_NEW) {
-            // (a) Unitaire : champ Vich mappé sur 'file' (non mappé Doctrine, mais relié au mapping Vich)
+            // Unitaire : champ Vich mappé sur 'file'
             yield Field::new('file', 'Fichier (unitaire)')
                 ->setFormType(VichImageType::class)
-                ->setRequired(false); // permettre d’utiliser uniquement le multiple si besoin
+                ->setRequired(false); // permettre d’utiliser uniquement le multiple si besoin donc non requis
 
-            // (b) Multiple : champ FileType non mappé 'files[]' (on persistera à la main en persistEntity)
+            // Multiple : champ FileType non mappé 'files[]' (on persist à la main)
             yield Field::new('files', 'Fichiers (multiple)')
                 ->setFormType(FileType::class)
                 ->setFormTypeOptions([
                     'multiple'   => true,
-                    'mapped'     => false, // [DX] indispensable : on récupère depuis la Request
+                    'mapped'     => false, // on récupère depuis la Request
                     'required'   => false,
-                    // [SECURITY] & [UPLOAD] Constraints côté serveur (mime, taille, nombre)
+                    // Constraintes côté serveur (mime, taille, nombre)
                     'constraints' => [
                         new Count([
                             'max' => 10,
@@ -95,7 +94,7 @@ final class MediaCrudController extends AbstractCrudController
                         ]),
                         new All([
                             new FileConstraint([
-                                'maxSize' => '25M', // [UPLOAD] cohérent avec PHP ini
+                                'maxSize' => '25M',
                                 'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
                                 'mimeTypesMessage' => 'Formats autorisés : JPG, PNG, WEBP.',
                             ])
@@ -104,35 +103,31 @@ final class MediaCrudController extends AbstractCrudController
                 ])
                 ->onlyOnForms();
         } else {
-            // =================================================================
-            // 2) PAGE EDIT → remplacement unitaire via Vich
-            // =================================================================
+            // PAGE EDIT → remplacement unitaire via Vich
             yield Field::new('file', 'Nouveau fichier')
                 ->setFormType(VichImageType::class)
                 ->setRequired(false)
                 ->onlyOnForms();
         }
 
-        // =====================================================================
-        // 3) Champs communs (INDEX/DETAIL) : aperçu + date + alt
-        // =====================================================================
+        // Champs formulaire : aperçu + date + alt
         yield ImageField::new('filename', 'Aperçu')
-            ->setBasePath('/uploads/media') // [ASSET] doit matcher uri_prefix du mapping Vich
-            ->hideOnForm();                 // [UX] lecture seule en back-office
+            ->setBasePath('/uploads/media')
+            ->hideOnForm();                 // lecture seule en back-office
 
         yield TextField::new('alt', 'Texte alternatif')
             ->setFormTypeOptions([
-                // si l’utilisateur laisse le champ vide, “image” sera persisté
+                // si l’utilisateur laisse le champ vide, “image indisponible” sera persisté comme alt
                 'empty_data' => 'image indisponible',
             ]);
 
         yield DateField::new('date', 'Date')
-            ->hideOnForm();                 // [DX] si gérée en PrePersist/PreUpdate côté entité
+            ->hideOnForm();                 //si gérée en PrePersist/PreUpdate côté entité
     }
 
     /**
      * Personnalisation des actions (labels + icônes).
-     * [UX] Icônes FA pour confort visuel ; labels clairs.
+     * icônes FA pour confort visuel ; labels clairs.
      */
     public function configureActions(Actions $actions): Actions
     {
@@ -168,10 +163,6 @@ final class MediaCrudController extends AbstractCrudController
      * PERSIST (création) :
      *  - Si 'files[]' (non mappé) est fourni → import multiple : 1 entité Media par fichier, 1 seul flush.
      *  - Sinon → comportement standard (unitaire) : parent::persistEntity() (Vich fera le job).
-     *
-     * [PERF] Un flush unique pour le lot.
-     * [DX] On lit la Request pour récupérer 'files' car non mappé (mapped=false).
-     * [SUBSCRIBER] La logique Carrousel reste dans un Subscriber Doctrine, pas ici.
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -202,17 +193,15 @@ final class MediaCrudController extends AbstractCrudController
 
             $em->flush();
             $this->addFlash('success', sprintf('%d fichier(s) importé(s).', $imported));
-            return; // [DX] ne pas tomber sur le parent en mode multi
+            return; // ne pas tomber sur le parent en mode multi
         }
 
-        // === Mode UNITAIRE : laisser EA/Vich gérer normalement ===
+        // Mode UNITAIRE : laisser EA/Vich gérer normalement ===
         parent::persistEntity($em, $entityInstance);
     }
 
     /**
-     * UPDATE (édition) :
      *  - Remplacement unitaire via Vich.
-     *  - Rien de spécifique ici (le Subscriber gère Carrousel si nécessaire).
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
