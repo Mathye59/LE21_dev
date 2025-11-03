@@ -391,6 +391,7 @@
   .footer-sections-group {
     gap: 1px;
     align-items: center;
+    justify-content: space-around;
     max-width: none;
   }
   .footer-sections-group .footer-section {
@@ -425,9 +426,9 @@
   .footer-content .size-footer {
     min-width: 150px;
   }
-  .footer-sections-group .footer-section {
+  /* .footer-sections-group .footer-section {
     min-width: 200px;
-  }
+  } */
   .logo-footer {
     width: 70%;
   }

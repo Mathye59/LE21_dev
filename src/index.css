@@ -396,7 +396,7 @@ body .login .content {
 /* Responsive - mobile */
 @media (max-width: 1200px) {
   .app-main {
-    background-size: 20%;
+    background:none;
   }
 }
 @media (max-width: 767px) {
