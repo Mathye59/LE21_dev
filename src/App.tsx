@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 import Acceuil from './pages/Acceuil';
 import Blog from './pages/Blog';
 import ArticleDetail from './components/Blog/ArticleDetail';
@@ -15,8 +17,8 @@ function App() {
     <BrowserRouter>
       <div className="app-container">
         <Header />
-        
-         <main className="app-main">
+
+        <main className="app-main">
           <Routes>
             <Route path="/" element={<Acceuil />} />
             <Route path="/flash" element={<Flash />} />
@@ -27,7 +29,7 @@ function App() {
           </Routes>
           <CookieConsent />
         </main>
-        
+
         <Footer />
       </div>
     </BrowserRouter>

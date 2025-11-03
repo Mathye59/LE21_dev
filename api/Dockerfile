@@ -1,37 +1,37 @@
 FROM php:8.2-apache
 
-# Installation des dépendances OS + client MySQL
+# OS deps + mysql client + netcat pour l'entrypoint
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libicu-dev git unzip zlib1g-dev \
-    default-mysql-client \
+    libicu-dev git unzip zlib1g-dev default-mysql-client netcat-openbsd \
  && rm -rf /var/lib/apt/lists/*
 
-# Installation des extensions PHP
+# PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql \
  && docker-php-ext-configure intl \
  && docker-php-ext-install intl
 
-# Configuration Apache
-RUN a2enmod rewrite
+# Apache
+RUN a2enmod rewrite && \
+    cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
+<VirtualHost *:80>
+    DocumentRoot /var/www/html/public
 
-RUN echo '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/html/public\n\
-    \n\
-    <Directory /var/www/html/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-    \n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+    <Directory /var/www/html/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
 
-# Installation de Composer
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOF
+
+# Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin --filename=composer
 
-# Limites d'upload PHP
+# PHP upload limits augmentation
 RUN { \
   echo 'file_uploads=On'; \
   echo 'upload_max_filesize=50M'; \
@@ -40,13 +40,20 @@ RUN { \
   echo 'memory_limit=512M'; \
 } > /usr/local/etc/php/conf.d/uploads.ini
 
-# Limite Apache pour les uploads
+# Apache upload limit
 RUN printf '\nLimitRequestBody 262144000\n' >> /etc/apache2/apache2.conf
 
-# Copie du script d'entrée
+# ---- entrypoint.sh ----
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# rendre exécutable + enlever CRLF + enlever le BOM
+RUN chmod +x /entrypoint.sh \
+ && sed -i 's/\r$//' /entrypoint.sh \
+ && sed -i '1s/^\xEF\xBB\xBF//' /entrypoint.sh
+
 
 WORKDIR /var/www/html
 
-CMD ["/entrypoint.sh"]
+# On garde l'entrypoint officiel PHP
+ENTRYPOINT ["docker-php-entrypoint"]
+# On appelle explicitement sh -> plus besoin de bash ni de shebang
+CMD ["/bin/sh", "/entrypoint.sh"]

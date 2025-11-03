@@ -36,11 +36,11 @@ class Media
     /**
      * Lien 1–1 vers la fiche Carrousel correspondante.
      * Ici, Media est le côté inversé (mappedBy='media').
-     * Le côté propriétaire doit être: Carrousel::$media (#[ORM\OneToOne(inversedBy: 'carrousel', ...)]).
+     * Le côté propriétaire est: Carrousel::$media (#[ORM\OneToOne(inversedBy: 'carrousel', ...)]).
      */
     #[ORM\OneToOne(mappedBy: 'media', targetEntity: Carrousel::class, cascade: ['remove'])]
     private ?Carrousel $carrousel = null;
-    
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $alt = null;
 
@@ -111,7 +111,7 @@ class Media
             return $this;
         }
 
-         // détache l’ancien côté inverse proprement
+        // détache l’ancien côté inverse proprement
         if ($this->carrousel !== null && $this->carrousel->getMedia() === $this) {
             $this->carrousel->setMedia(null);
         }
@@ -129,18 +129,18 @@ class Media
 
     public function __toString(): string
     {
-        return (string) ($this->filename ?? 'media#'.$this->id);
+        return (string) ($this->filename ?? 'media#' . $this->id);
     }
 
     /* fonction pour récupérations des medias dans Articles*/
     public function getAlt(): ?string
     {
-         return $this->alt;
+        return $this->alt;
     }
 
-    public function setAlt(?string $alt): self 
+    public function setAlt(?string $alt): self
     {
-         $this->alt = $alt; return $this; 
+        $this->alt = $alt;
+        return $this;
     }
 }
-

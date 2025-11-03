@@ -103,7 +103,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Tags automatiques (sha + latest). Tu peux ajouter des tags semver si besoin.
+      # Tags automatiques 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
