@@ -79,16 +79,14 @@ final class MediaCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-        // =====================================================================
-        // 1) PAGE NEW → 2 modes d'upload
-        // =====================================================================
+        //PAGE NEW → 2 sorte d'upload
         if ($pageName === Crud::PAGE_NEW) {
-            // (a) Unitaire : champ Vich mappé sur 'file' (non mappé Doctrine, mais relié au mapping Vich)
+            //  1seul fichier : champ Vich mappé sur 'file' (non mappé Doctrine, mais relié au mapping Vich)
             yield Field::new('file', 'Fichier (unitaire)')
                 ->setFormType(VichImageType::class)
                 ->setRequired(false); // permettre d’utiliser uniquement le multiple si besoin
 
-            // (b) Multiple : champ FileType non mappé 'files[]' (on persistera à la main en persistEntity)
+            // plusieurs fichier max 10 : champ FileType non mappé 'files[]' (on persiste à la main en persistEntity)
             yield Field::new('files', 'Fichiers (multiple)')
                 ->setFormType(FileType::class)
                 ->setFormTypeOptions([
@@ -112,9 +110,7 @@ final class MediaCrudController extends AbstractCrudController
                 ])
                 ->onlyOnForms();
         } else {
-            // =================================================================
-            // 2) PAGE EDIT → remplacement unitaire via Vich
-            // =================================================================
+            // PAGE EDIT → remplacement du fichier via Vich
             yield Field::new('file', 'Nouveau fichier')
                 ->setFormType(VichImageType::class)
                 ->setRequired(false)

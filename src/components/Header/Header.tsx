@@ -4,29 +4,27 @@ import { NavLink } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL as string;
 
-type Entreprise = { logoUrl?: string; logoName?: string };
-
-const abs = (p?: string) =>
-  !p ? undefined : /^https?:\/\//i.test(p) ? p : `${API.replace(/\/+$/, "")}/${p.replace(/^\/+/, "")}`;
+type Entreprise = { 
+  logoUrl?: string;
+};
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [logo, setLogo] = useState<string | undefined>();
+  const [logo, setLogo] = useState<string>();
 
   useEffect(() => {
-    let stop = false;
-    (async () => {
-      try {
-        const r = await fetch(`${API}/api/entreprise`, { credentials: "omit" });
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        const e: Entreprise = await r.json();
-        const url = abs(e.logoUrl) ?? (e.logoName ? abs(`/uploads/logos/${e.logoName}`) : undefined);
-        if (!stop && url) setLogo(url);
-      } catch (err) {
-        console.error("[Header] /api/entreprise:", err);
-      }
-    })();
-    return () => { stop = true; };
+    let mounted = true;
+    
+    fetch(`${API}/api/entreprise`, { credentials: "omit" })
+      .then(r => r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`))
+      .then((data: Entreprise) => {
+        if (mounted && data.logoUrl) {
+          setLogo(`${API}${data.logoUrl}`);
+        }
+      })
+      .catch(err => console.error("[Header] /api/entreprise:", err));
+
+    return () => { mounted = false; };
   }, []);
 
   const burgerSrc = useMemo(() => `/images/menuBurger.png`, []);
@@ -38,16 +36,19 @@ export default function Header() {
         {/* Nav gauche */}
         <nav className="nav-left" aria-label="Navigation principale gauche">
           <ul>
-            <li><NavLink to="/" className={({isActive}) => isActive ? "active" : undefined}>
+            <li>
+              <NavLink to="/" className={({isActive}) => isActive ? "active" : undefined}>
                 Accueil
               </NavLink>
             </li>
-            <li><NavLink to="/flash" className={({isActive}) => isActive ? "active" : undefined}>
+            <li>
+              <NavLink to="/flash" className={({isActive}) => isActive ? "active" : undefined}>
                 Flash
               </NavLink>
-              </li>
+            </li>
           </ul>
         </nav>
+
         {/* Logo centré */}
         <div className="logo-center">
           <div className="main-logo">
@@ -62,13 +63,15 @@ export default function Header() {
         {/* Nav droite */}
         <nav className="nav-right" aria-label="Navigation principale droite">
           <ul>
-            <li> <NavLink to="/blog" className={({isActive}) => isActive ? "active" : undefined}>
+            <li>
+              <NavLink to="/blog" className={({isActive}) => isActive ? "active" : undefined}>
                 Blog
               </NavLink>
-          </li>
-            <li> <NavLink to="/contact" className={({isActive}) => isActive ? "active" : undefined}>
-                  Contact
-                </NavLink>
+            </li>
+            <li>
+              <NavLink to="/contact" className={({isActive}) => isActive ? "active" : undefined}>
+                Contact
+              </NavLink>
             </li>
           </ul>
         </nav>
@@ -90,26 +93,26 @@ export default function Header() {
         <ul onClick={() => setOpen(false)}>
           <li>
             <NavLink to="/" className={({isActive}) => isActive ? "active" : undefined}>
-                Accueil
-              </NavLink>
+              Accueil
+            </NavLink>
             <img src={separatorSrc} alt="" style={{ width: '200px', margin: '10px auto', display: 'block', opacity: 0.7 }} />
           </li>
           <li>
             <NavLink to="/flash" className={({isActive}) => isActive ? "active" : undefined}>
-                Flash
-              </NavLink>
+              Flash
+            </NavLink>
             <img src={separatorSrc} alt="" style={{ width: '200px', margin: '10px auto', display: 'block', opacity: 0.7 }} />
           </li>
           <li>
             <NavLink to="/blog" className={({isActive}) => isActive ? "active" : undefined}>
-                Blog
-              </NavLink>
+              Blog
+            </NavLink>
             <img src={separatorSrc} alt="" style={{ width: '200px', margin: '10px auto', display: 'block', opacity: 0.7 }} />
           </li>
           <li>
             <NavLink to="/contact" className={({isActive}) => isActive ? "active" : undefined}>
-                  Contact
-                </NavLink>
+              Contact
+            </NavLink>
           </li>
         </ul>
       </div>
